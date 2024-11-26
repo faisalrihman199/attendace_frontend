@@ -1,0 +1,10 @@
+.top_heading{
+    font-size: 28px;
+}
+.prfile_label{
+    color: black;
+}
+.MuiTableContainer-root{
+    box-shadow: none !important;
+    background-color: transparent !important;
+}
