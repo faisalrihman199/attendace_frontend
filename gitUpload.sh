@@ -13,9 +13,6 @@ git add .
 # Commit with the provided message
 git commit -m "$1"
 
-# Pull changes from the remote to ensure no conflicts
-git pull --rebase origin main
-
 # Push changes to the main branch
 git push origin main
 
