@@ -192,6 +192,19 @@ const APIProvider = ({ children }) => {
     const response = await axios.post(url,data);
     return response.data;
   };
+  const checkPin=async (pin) => { 
+    let url=`${server}/athelete/checkPin`
+    url=forAdmin(url);
+    if(url.includes('?')){
+      url+=`&pin=${pin}`
+    }
+    else{
+      url+=`?pin=${pin}`
+    }
+    
+    const response = await axios.get(url, getConfig());
+    return response.data;
+  };
   const getBussiness=async (data) => { 
     let url=`${server}/business/detail`
     const response = await axios.post(url,data);
@@ -254,7 +267,7 @@ const APIProvider = ({ children }) => {
     login,signup,sendOtp, //auth
     userProfile,createUser,contact,updateProfile,   //user
     allBussineses,deleteBussiness, updateBussinessStatus, addBussiness,getBussiness,businessDashboard,            //bussinesses
-    addTeam, allTeams, generatePin,allGroups,deleteGroup,                         //Team/Class
+    addTeam, allTeams, generatePin,allGroups,deleteGroup,checkPin,                         //Team/Class
     addStudent,allStudents,deleteStudent,checkIn,checkIndata,uploadAthletesCSV,                                         //Athelete
     getReporting,updateReporting,billingDashboard, paymentHistory,reportPDF,changePLan,                      //Reporting
     getConfig,

@@ -7,6 +7,9 @@ import DashboardChart from "../../../assets/images/Dummy/DashboardChart.png"
 import BasicLineChart from '../../../Components/Graph/BasicLineChart'
 import { useAPI } from '../../../contexts/Apicontext'
 import Loading from "../../../Components/Loading"
+import CryptoJS from "crypto-js";
+import { AiOutlineTeam, AiOutlineUser } from 'react-icons/ai'
+
 const Dashboard = () => {
     const {businessDashboard}=useAPI();
     const [loading,setLoading]=useState(false);
@@ -15,9 +18,33 @@ const Dashboard = () => {
     const [chartData,setData]=useState([]);
     const [lastLogins,setLogins]=useState([]);
     const [businessName, setBusiness]=useState('');
+    const [businessId,setBusinessId]=useState(null);
     const server = import.meta.env.VITE_APP_URL;
-    const localUser=JSON.parse(localStorage.getItem('user'));
-    
+    const secretKey = import.meta.env.VITE_APP_SECRET_KEY;
+    console.log("Secret Key:", import.meta.env.VITE_APP_SECRET_KEY);
+
+    const encryptBusinessId = (businessId) => {
+        if (!businessId) {
+          throw new Error("Invalid businessId: Cannot be null or undefined");
+        }
+        if (!secretKey) {
+          throw new Error("Secret key is not defined");
+        }
+      
+        // Convert businessId to a string (if it's not already)
+        const businessIdStr = businessId.toString();
+      
+        // Encrypt using AES
+        const encrypted = CryptoJS.AES.encrypt(businessIdStr, secretKey).toString();
+      
+        // Encode in Base64 and make it URL-safe (remove +, /, =, etc.)
+        const urlSafeEncrypted = encrypted
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=+$/, ''); // Remove trailing '=' characters
+      
+        return urlSafeEncrypted;
+      };
 
 
     useEffect(()=>{
@@ -30,6 +57,7 @@ const Dashboard = () => {
             setData(res.data.athleteGroups);
             setLogins(res.data.last3Logins);
             setBusiness(res.data.businessName);
+            setBusinessId(encryptBusinessId(res.data.businessId));
         })
         .catch((err)=>{
             console.log("Error :", err);
@@ -55,7 +83,7 @@ const Dashboard = () => {
                             <div className="d-flex">
                                 <div className='mx-2'>
                                     <span >
-                                        <AthleteIcon />
+                                        <AiOutlineUser size={50} />
                                     </span>
 
                                 </div>
@@ -63,7 +91,7 @@ const Dashboard = () => {
                                     <h6 className='poppins-medium mb-0' style={{fontSize:'28px'}} >
                                         {totalStudent}
                                     </h6>
-                                    <p className='poppins-medium mb-0' style={{fontSize:'16px'}} >Active Students</p>
+                                    <p className='poppins-medium mb-0' style={{fontSize:'16px'}} >Active Athletes</p>
                                 </div>
                             </div>
                         </div>
@@ -75,7 +103,7 @@ const Dashboard = () => {
                             <div className="d-flex">
                                 <div className='mx-2 mt-1'>
                                     <span >
-                                        <ClassIcon />
+                                    <AiOutlineTeam size={50} />
                                     </span>
 
                                 </div>
@@ -101,8 +129,8 @@ const Dashboard = () => {
                 <p className='top_heading poppins-regular  font-20'> Check In now to record attendance</p>
             </div>
             <div className="my-3">
-                <Link to={`/check-in/${businessName}@${localUser?.role==='superAdmin'?sessionStorage.getItem('currentBussiness'):localUser.business}`} className='font-20' style={{color:'#003CFF'}} >
-                {server}/check-in/{businessName}@{localUser?.role==='superAdmin'?sessionStorage.getItem('currentBussiness'):localUser.business}
+                <Link to={`/check-in/${businessName}@${businessId}`} className='font-20' style={{color:'#003CFF'}} >
+                {server}/check-in/{businessName}@{businessId}
                 </Link>
             </div>
             <div className='mb-3'>

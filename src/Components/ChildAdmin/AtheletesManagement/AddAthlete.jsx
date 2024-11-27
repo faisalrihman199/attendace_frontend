@@ -6,9 +6,11 @@ import Upload from '../../../Components/ChildAdmin/Setting/Icons/Upload';
 import { useAPI } from '../../../contexts/Apicontext';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { RxCrossCircled } from 'react-icons/rx';
+import { SiTicktick } from 'react-icons/si';
 
 const AddAthlete = () => {
-    const { register, handleSubmit, setValue,reset, watch, formState: { errors } } = useForm();
+    const { register, handleSubmit, getValues, setValue, reset, watch, formState: { errors } } = useForm();
     const [imageSrc, setImageSrc] = useState(null); // State to hold image source
     const fileInputRef = useRef(null); // Create a ref for the file input
     const [emailToggled, setEmailToggle] = useState(true);
@@ -17,50 +19,77 @@ const AddAthlete = () => {
     const [teams, setTeams] = useState([]);
     const [classes, setClasses] = useState([]);
     const [photo, setPhoto] = useState(null);
-    const [loading, setLoading]=useState(false);
-    const { allTeams, generatePin,addStudent } = useAPI(); // Destructure both functions from context
+    const [loading, setLoading] = useState(false);
+    const { allTeams, generatePin, addStudent, checkPin } = useAPI(); // Destructure both functions from context
+    const [pinLength, setLength] = useState(0);
     let server = import.meta.env.VITE_APP_API_URL || '';
-    const navigate=useNavigate();
+    const navigate = useNavigate();
     const location = useLocation();
+
     const { athlete } = location.state || {};
-    // Fetch teams and classes from API
+    const pinValue = watch('pin') || 0;
+    const [isOkay, setOkay] = useState(false);
+
+    useEffect(() => {
+        if (pinValue && pinValue.length === pinLength) {
+            console.log("PIN reached the required length:", pinValue);
+            checkPin(pinValue)
+            .then((res)=>{
+                if(res.success){
+                    setOkay(true);
+                }
+                else{
+                    toast.error(res.message)
+                }
+                
+            })
+            .catch((err)=>{
+                console.log("Error ");
+            })
+        }
+        if(pinValue.length < pinLength || pinValue.length < pinLength ){
+            setOkay(false);
+        }
+    }, [pinValue, pinLength]);
+
     useEffect(() => {
         allTeams()
             .then((res) => {
                 console.log("Teams Data:", res);
                 setTeams(res.data.teams);
                 setClasses(res.data.classes);
+                setLength(Number(res.pinLength));
             })
             .catch((err) => {
                 console.error("Error:", err);
             });
     }, [allTeams]);
+
     useEffect(() => {
         if (athlete) {
             server = server.replace('/api', '');
-            
             const formattedDateOfBirth = athlete.dateOfBirth
                 ? new Date(athlete.dateOfBirth).toLocaleDateString('en-GB') // Convert date to dd/mm/yyyy
                 : '';
-            
+
             reset({
                 pin: athlete.pin || '',
                 name: athlete.name || '',
                 email: athlete.email || '',
                 dateOfBirth: formattedDateOfBirth,
                 description: athlete.description || '',
-                
+
             });
-            
-            
+
+
             setSelectedTeamClass(athlete.athleteGroupId || '');
             setEmailToggle(athlete.active);
-            
+
             // Ensure athlete.photoPath is valid before setting imageSrc
             const photoPath = athlete.photoPath ? `${server}${athlete.photoPath}` : null;
             console.log("Photo to be uploaded is:", photoPath);
             setImageSrc(photoPath);
-    
+
             // Only convert to file if photoPath is valid
             if (photoPath) {
                 fetch(photoPath)
@@ -81,10 +110,7 @@ const AddAthlete = () => {
             }
         }
     }, []);
-    
-    
-    
-    const resetForm=()=>{
+    const resetForm = () => {
         photo(null);
         imageSrc(null);
         reset();
@@ -126,47 +152,46 @@ const AddAthlete = () => {
             });
     };
 
+
     const onSubmit = (data) => {
         if (!selectedTeamClass) {
             toast.error("Please Select a team or Class");
             return;
         }
-        else if (!photo) {
-            toast.error("Please Upload a photo");
-            return;
-
-        }
+        
         setLoading(true);
         data.athleteGroupId = selectedTeamClass;
-        data.active=emailToggled;
+        data.active = emailToggled;
         const formData = new FormData();
-        
+
         // Loop through the form data object and append each key-value pair to formData
         for (const key in data) {
             formData.append(key, data[key]);
         }
-        formData.append('photo', photo);
+        if(photo){
+            formData.append('photo', photo);
+        }
         console.log("Form Data:", Object.fromEntries(formData));
         addStudent(formData)
-        .then((res)=>{
-            if(res.success){
-                toast.success(res.message);
-                navigate('/admin/athletes')
-                
-            }
-            else{
-                toast.error(res.message);
+            .then((res) => {
+                if (res.success) {
+                    toast.success(res.message);
+                    navigate('/admin/athletes')
 
-            }
-        })
-        .catch((err)=>{
-            console.log("Error :", err);
-            toast.error("Failed to add Athelete");
-            
-        })
-        .finally(()=>{
-            setLoading(false);
-        })
+                }
+                else {
+                    toast.error(res.message);
+
+                }
+            })
+            .catch((err) => {
+                console.log("Error :", err);
+                toast.error("Failed to add Athelete");
+
+            })
+            .finally(() => {
+                setLoading(false);
+            })
         // Handle form submission logic here
     };
 
@@ -176,17 +201,38 @@ const AddAthlete = () => {
                 <input
                     type='number'
                     placeholder='Student ID / PIN'
+
                     className="form-control p-2"
-                    {...register('pin', { required: 'Student PIN is required' })}
+                    {...register('pin', {
+                        required: 'Student PIN is required', minLength: {
+                            value: pinLength,
+                            message: `Athlete PIN must be exactly ${pinLength} digits`,
+                        },
+                        maxLength: {
+                            value: pinLength,
+                            message: `Athlete PIN must be exactly ${pinLength} digits`,
+                        }
+                    })}
                     style={{ backgroundColor: 'transparent', border: 'none' }}
                 />
                 {
                     !athlete &&
-                <span className='cursor-pointer poppins-thin' onClick={handlePin}>Generate</span>
+                    <span className='cursor-pointer poppins-thin d-flex align-items-center' onClick={handlePin}> 
+                    {
+                        isOkay?
+                        <SiTicktick  className='mx-2' color='green'  />
+
+                        :
+                        <RxCrossCircled className='mx-2' color='red' />
+
+                    }
+                    
+                    Generate
+                    </span>
                 }
 
             </div>
-                {errors.pin && <span className="text-danger mb-3">{errors.pin.message}</span>}
+            {errors.pin && <span className="text-danger ms-3">{errors.pin.message}</span>}
 
             <div className="row mb-3">
                 <div className="col-sm-12">
@@ -315,7 +361,7 @@ const AddAthlete = () => {
                     <div className="col-sm-12">
                         <div onClick={handleUploadClick} style={{ cursor: 'pointer' }}>
                             {imageSrc ? (
-                                <img src={imageSrc} alt="Uploaded Logo" style={{ width: '400px', maxWidth:'100%', height: '300px', objectFit: 'cover' }} />
+                                <img src={imageSrc} alt="Uploaded Logo" style={{ width: '400px', maxWidth: '100%', height: '300px', objectFit: 'cover' }} />
                             ) : (
                                 <Upload />
                             )}
@@ -336,15 +382,15 @@ const AddAthlete = () => {
                     Cancel
                 </button>
                 {
-                    loading?
-                    <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Adding ...
-                </>
-                    :
-                    <button type="submit" className="btn mx-2 rounded btns poppins-medium" style={{ width: '180px' }}>
-                        Add
-                    </button>
+                    loading ?
+                        <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Adding ...
+                        </>
+                        :
+                        <button type="submit" className="btn mx-2 rounded btns poppins-medium" style={{ width: '180px' }}>
+                            Add
+                        </button>
 
                 }
             </div>

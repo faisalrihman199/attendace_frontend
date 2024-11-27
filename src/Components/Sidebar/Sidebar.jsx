@@ -12,6 +12,7 @@ import Setting from "./Icons/Setting";
 import Help from "./Icons/Help";
 import Profile from "./Icons/Profile";
 import Logout from "./Icons/Logout";
+import { AiOutlineTeam, AiOutlineUser } from "react-icons/ai";
 
 const Sidebar = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -52,14 +53,14 @@ const Sidebar = () => {
           </li>
           <li className="sidebar-item my-2">
             <Link to="/admin/teams" className={`sidebar-link d-flex mx-2 ${isActive('teams') ? 'active_link' : ''}`}>
-              <div><Teams /></div>
+              <div><AiOutlineTeam size={24} /></div>
               <span className="mx-2 mt-1">Manage Teams</span>
             </Link>
           </li>
           <li className="sidebar-item my-2">
             <Link to="/admin/athletes" className={`sidebar-link d-flex mx-2 ${isActive('athletes') ? 'active_link' : ''}`}>
-              <div><Atheletes /></div>
-              <span className="mx-2 mt-1">Manage Athletes</span>
+            <div><AiOutlineUser size={24} /></div>
+            <span className="mx-2 mt-1">Manage Athletes</span>
             </Link>
           </li>
           

@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useAPI } from '../../contexts/Apicontext';
 import Loading from '../../Components/Loading';
+import CryptoJS from "crypto-js";
 
 const CheckIn = () => {
     const [checked, setChecked] = useState(false);
@@ -24,6 +25,32 @@ const CheckIn = () => {
     const [business, setBusiness] = useState(null);
     const [photo, setPhoto] = useState(Bussiness);
     const [startLoading, setStart] = useState(false);
+    const secretKey = import.meta.env.VITE_APP_SECRET_KEY;
+
+    const decryptBusinessId = (encryptedBusinessId) => {
+        if (!encryptedBusinessId) {
+            throw new Error("Invalid encryptedBusinessId: Cannot be null or undefined");
+        }
+        if (!secretKey) {
+            throw new Error("Secret key is not defined");
+        }
+
+        // Convert URL-safe Base64 back to standard Base64
+        const base64Encrypted = encryptedBusinessId
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
+
+        // Decrypt using AES
+        const bytes = CryptoJS.AES.decrypt(base64Encrypted, secretKey);
+        const decryptedBusinessId = bytes.toString(CryptoJS.enc.Utf8);
+
+        if (!decryptedBusinessId) {
+            throw new Error("Decryption failed: Invalid encryptedBusinessId or secretKey");
+        }
+
+        return decryptedBusinessId;
+    };
+
 
 
     useEffect(() => {
@@ -64,7 +91,6 @@ const CheckIn = () => {
     let server = import.meta.env.VITE_APP_API_URL;
     useEffect(() => {
         setStart(true);
-
         if (name) {
             getBussiness({ name: name.split('@').slice(0, -1).join('@') })
                 .then((res) => {
@@ -93,7 +119,7 @@ const CheckIn = () => {
         }
         const data = {
             pin: getValues('pin'),
-            businessId
+            businessId: decryptBusinessId(businessId)
         };
 
         console.log("Data to be submit is :", data);
@@ -105,10 +131,12 @@ const CheckIn = () => {
                 if (res.success) {
                     toast.success(res.message);
                     setAthlete(res.data.athleteName);
-                    setPic(`${server.split('/api')[0]}${res.data.photoPath}`)
+                    if (res.data.photoPath) {
+                        setPic(`${server.split('/api')[0]}${res.data.photoPath}`)
+                    }
                     setChecked(true);
                     setTimeout(() => {
-                        window.location.reload();
+                        // window.location.reload();
                     }, 5000);
                 } else {
                     toast.error(res.message);
@@ -149,7 +177,7 @@ const CheckIn = () => {
                                 <div className='my-4' style={{ width: '100%', maxWidth: '700px' }}>
                                     <div className="d-flex justify-content-between align-items-center">
                                         <p className='poppins-thin' style={{ fontSize: '28px' }}>
-                                            THANK YOU <b>{athleteName.toUpperCase()}</b> FOR CHECKING IN. YOUR TIME HAS BEEN RECORDED
+                                            THANK YOU <b>{athleteName.toUpperCase()}</b> FOR CHECKING IN. YOUR TIME HAS BEEN RECORDED AND SENT TO YOUR EMAIL.
                                         </p>
                                         <div className='mx-3'>
                                             <img src={pic} className='rounded-circle' alt="" height={144} width={144} />
@@ -165,12 +193,15 @@ const CheckIn = () => {
                                 <div className="my-3">
                                     <p className='poppins-regular font-20 mb-2 ms-1'>Enter PIN to Check-In</p>
                                     <input
-                                        type="text"
+                                        type="text" // Use 'text' or 'tel' for better compatibility
+                                        inputMode="numeric" // Ensures number keyboard on mobile
+                                        pattern="[0-9]*" // Optional: restrict input to numbers
                                         className="form-control p-2 bg_dede mb-2"
                                         placeholder="PIN"
-                                        autoComplete="new-password" 
+                                        autoComplete="new-password"
                                         {...register('pin')}
                                     />
+
 
                                     <div className="d-flex justify-content-center">
                                         {
