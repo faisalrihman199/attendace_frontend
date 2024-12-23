@@ -48,10 +48,7 @@ const Reports = () => {
   }, [currentPage, query]);
 
   const handleQuery = () => {
-    if (!searchInput && !selectedOption && !startDate && !endDate) {
-      toast.error("Please provide search input or date range");
-      return null;
-    }
+    
 
     const qryParts = [];
     if (selectedOption && searchInput) {
@@ -78,8 +75,6 @@ const Reports = () => {
 
   const handlePrint = () => {
     const qry = handleQuery();
-    if (!qry) return;
-
     reportPDF(qry)
       .then((res) => {
         console.log("Response object:", res);
@@ -202,7 +197,7 @@ const Reports = () => {
                     onChange={(e) => setStartDate(e.target.value)}
                   />
                 </div>
-                <div className="col-md-6 col-sm-12">
+                <div className="col-md-6 col-sm-12 my-2">
                   <input
                     type="text"
                     placeholder='End Date'
@@ -223,7 +218,7 @@ const Reports = () => {
             </div>
           </div>
           <div className="row mt-3">
-            <div className="col-md-6 col-sm-12">
+            <div className="col-md-6 col-sm-12 my-2">
               <button
                 className="bg_dede bg_dede_btn poppins-medium p-3 px-4 w-100"
                 style={{ borderRadius: '20px', color: '#50514F', fontSize: '16px', border: 'none' }}
@@ -260,7 +255,7 @@ const Reports = () => {
               rows={checkData.map((checkIn) => ({
                 athleteId: checkIn.athlete.pin,
                 athleteName: checkIn.athlete.name,
-                team: checkIn.athlete.groupName,
+                team: checkIn.athlete.groupNames,
                 date: checkIn.createdAt.split('T')[0],
                 time: checkIn.checkinTime,
               }))}

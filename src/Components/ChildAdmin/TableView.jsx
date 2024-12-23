@@ -69,6 +69,7 @@ export default function CustomizedTables({ headNames, rows, setSortValue, setSor
         <TableBody>
           {rows.map((row, index) => (
             <StyledTableRow key={index}>
+              
               {Object.values(row).map((value, i) => (
                 <StyledTableCell key={i} align="center" className='poppins-thin'>
                   {value}

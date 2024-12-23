@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Logo from "../../assets/Logo.png";
-import Bussiness from "../../assets/images/Dummy/Bussiness.png";
+import Bussiness from "../../assets/images/Dummy/bussiness_dummy.png";
 import person from "../../assets/images/Dummy/Profile.png";
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { useForm } from 'react-hook-form';
@@ -27,31 +27,7 @@ const CheckIn = () => {
     const [startLoading, setStart] = useState(false);
     const secretKey = import.meta.env.VITE_APP_SECRET_KEY;
 
-    const decryptBusinessId = (encryptedBusinessId) => {
-        if (!encryptedBusinessId) {
-            throw new Error("Invalid encryptedBusinessId: Cannot be null or undefined");
-        }
-        if (!secretKey) {
-            throw new Error("Secret key is not defined");
-        }
-
-        // Convert URL-safe Base64 back to standard Base64
-        const base64Encrypted = encryptedBusinessId
-            .replace(/-/g, '+')
-            .replace(/_/g, '/');
-
-        // Decrypt using AES
-        const bytes = CryptoJS.AES.decrypt(base64Encrypted, secretKey);
-        const decryptedBusinessId = bytes.toString(CryptoJS.enc.Utf8);
-
-        if (!decryptedBusinessId) {
-            throw new Error("Decryption failed: Invalid encryptedBusinessId or secretKey");
-        }
-
-        return decryptedBusinessId;
-    };
-
-
+    
 
     useEffect(() => {
         if (showScanner) {
@@ -98,7 +74,10 @@ const CheckIn = () => {
                     setBusiness(res.data)
 
                     server = server.replace('/api', '');
-                    setPhoto(`${server}/${res.data.photo}`);
+                    if(res.data.photo){
+
+                        setPhoto(`${server}/${res.data.photo}`);
+                    }
                 })
                 .catch((err) => {
                     console.log("Error :", err);
@@ -109,9 +88,24 @@ const CheckIn = () => {
         }
     }, [])
 
-    function handleManualSerialNumberChange(event) {
-        setManualSerialNumber(event.target.value);
-    }
+    function decryptBusinessId(encrypted) {
+        if (!encrypted.startsWith('RG') || !encrypted.includes('W')) {
+          throw new Error("Invalid encrypted format.");
+        }
+      
+        // Extract the number part from the encrypted string
+        const numberPart = encrypted.slice(2, encrypted.indexOf('W'));
+        const encryptedNum = parseInt(numberPart, 10);
+        const plusTwo = parseInt(encrypted.slice(encrypted.indexOf('W') + 1), 10);
+      
+        // Perform the decryption: Subtract 2 from the number
+        if (isNaN(encryptedNum) || isNaN(plusTwo)) throw new Error("Invalid encrypted data.");
+      
+        const decrypted = plusTwo - 2;
+      
+        return decrypted;
+      }
+      
     const handleCheckIn = (pin) => {
         if (!getValues('pin') && !pin) {
             toast.error("Please Enter PIN or Scan QR Code");
@@ -136,7 +130,7 @@ const CheckIn = () => {
                     }
                     setChecked(true);
                     setTimeout(() => {
-                        // window.location.reload();
+                        window.location.reload();
                     }, 5000);
                 } else {
                     toast.error(res.message);

@@ -21,30 +21,19 @@ const Dashboard = () => {
     const [businessId,setBusinessId]=useState(null);
     const server = import.meta.env.VITE_APP_URL;
     const secretKey = import.meta.env.VITE_APP_SECRET_KEY;
-    console.log("Secret Key:", import.meta.env.VITE_APP_SECRET_KEY);
+    function encryptBusinessId(num) {
+        // Convert the number to a string
+        const number = parseInt(num, 10);
+        if (isNaN(number)) throw new Error("Input must be a valid number.");
+        
+        // Perform the encryption: "RG" + number + "W" + 2
+        const encrypted = `RG${number}W${number + 2}`;
+        
+        return encrypted;
+      }
+      
 
-    const encryptBusinessId = (businessId) => {
-        if (!businessId) {
-          throw new Error("Invalid businessId: Cannot be null or undefined");
-        }
-        if (!secretKey) {
-          throw new Error("Secret key is not defined");
-        }
-      
-        // Convert businessId to a string (if it's not already)
-        const businessIdStr = businessId.toString();
-      
-        // Encrypt using AES
-        const encrypted = CryptoJS.AES.encrypt(businessIdStr, secretKey).toString();
-      
-        // Encode in Base64 and make it URL-safe (remove +, /, =, etc.)
-        const urlSafeEncrypted = encrypted
-          .replace(/\+/g, '-')
-          .replace(/\//g, '_')
-          .replace(/=+$/, ''); // Remove trailing '=' characters
-      
-        return urlSafeEncrypted;
-      };
+    
 
 
     useEffect(()=>{

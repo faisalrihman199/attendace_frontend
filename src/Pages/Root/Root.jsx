@@ -6,7 +6,7 @@ import { Route, Routes } from 'react-router-dom';
 import NotFound from '../Errors/NotFound';
 import AddBussiness from './ChildRoot/AddBussiness';
 import Businesses from './ChildRoot/Businesses';
-
+import EmailTemplates from '../Admin/ChildAdmin/EmailTemplates';
 const Admin = () => {
     return (
         <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
@@ -20,6 +20,7 @@ const Admin = () => {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/businesses" element={<Businesses />} />
                     <Route path="/add_business" element={<AddBussiness />} />
+                    <Route path="/templates" element={<EmailTemplates />} />
                     <Route path="/*" element={<NotFound />} />
                 </Routes>
             </div>

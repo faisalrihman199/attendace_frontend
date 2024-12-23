@@ -10,7 +10,7 @@ const Login = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const { register, handleSubmit, getValues, formState: { errors } } = useForm();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false); // New loading state
+    const [loading, setLoading] = useState(0); // New loading state
 
 
     const { login } = useAPI()
@@ -22,43 +22,31 @@ const Login = () => {
     };
 
 
-    /**
-     * Handles the forgot password click event.
-     * 
-     * If the email input field is empty, logs a message to the console.
-     * Otherwise, sets the "forgotEmail" key in session storage to the value of the email input field.
-     * The user is not navigated to the OTP verification page for now.
-     */
-    const handleForgot = () => {
-        const email = getValues('email')
-        if (!email) {
-            alert('Enter Email to Forgott');
-            return
-        }
-        sessionStorage.setItem("forgotEmail", email);
 
-        navigate("/otpVerify");
+    const { sendOtp } = useAPI();
+    const handleForgot = () => {
+        navigate('/reset')
     };
 
     const handleLogin = async (data) => {
-        setLoading(true);
+        setLoading(1);
         try {
             const res = await login(data);
 
             if (res.success && res.data) {
                 localStorage.setItem("user", JSON.stringify(res.data));
                 if (res.data.role === "admin") {
-                    if(res.data.subscriptionStatus!=='active'){
+                    if (res.data.subscriptionStatus !== 'active') {
                         navigate('/subscription')
                     }
-                    else if(!res.data.business){
-                        
+                    else if (!res.data.business) {
+
                         navigate('/admin/settings')
                     }
-                    else{
+                    else {
                         navigate("/admin/dashboard");
                     }
-                } else if(res.data.role === "superAdmin") {
+                } else if (res.data.role === "superAdmin") {
                     navigate("/root/businesses");
                 }
             } else {
@@ -70,8 +58,8 @@ const Login = () => {
             toast.error(error.message);
 
         }
-        finally{
-            setLoading(false);
+        finally {
+            setLoading(0);
         }
     };
 
@@ -130,15 +118,22 @@ const Login = () => {
 
                             <div className="row">
                                 <div className="col-sm-12">
-                                    {loading ? (
+                                    {loading === 1 ? (
                                         <div className='text-center'>
                                             <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                             Logging in...
                                         </div>
-                                    ) :
-                                        <button type="submit" className="btn btns w-100">
-                                            Login
-                                        </button>
+                                    )
+                                        :
+                                        loading === 2 ?
+                                            <div className='text-center'>
+                                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                Sending OTP...
+                                            </div>
+                                            :
+                                            <button type="submit" className="btn btns w-100">
+                                                Login
+                                            </button>
                                     }
                                 </div>
                             </div>

@@ -17,9 +17,9 @@ const ManageTeams = () => {
         <h1 className='top_heading poppins-medium color_bao'>TEAM/CLASSES</h1>
       </div>
       <div className="my-3">
-        <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex flex-wrap justify-content-between align-items-center">
           <div className="col-md-4 col-sm-12 my-2">
-            <div className="d-flex align-items-center bg_dede password_fields rounded pe-3">
+            <div className="d-flex my-4 align-items-center bg_dede password_fields rounded pe-3">
               <input
                 type="text"
                 placeholder="Search"
@@ -34,7 +34,7 @@ const ManageTeams = () => {
           </div>
           <div>
 
-          <Link to="/admin/teams/add" className=' bg_dede color-bao poppins-medium p-3 color_bao px-4 ' style={{ borderRadius: '20px', fontSize: '16px', border: 'none' }}>Add Team/Class</Link>
+          <Link to="/admin/teams/add" className=' bg_dede color-bao poppins-medium p-3 color_bao px-4 my-2' style={{ borderRadius: '20px', fontSize: '16px', border: 'none' }}>Add Team/Class</Link>
           </div>
         </div>
       </div>

@@ -23,7 +23,10 @@ const Profile = () => {
             setProfile(res.data);
             setName(`${res.data.firstName} ${res.data.lastName}`)
             server = server.replace('/api', '');
-            setPhoto(`${server}${res.data.businessPhoto}`)
+            if(res.data.businessPhoto){
+
+                setPhoto(`${server}${res.data.businessPhoto}`)
+            }
             
         })
         .catch((err)=>{

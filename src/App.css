@@ -145,3 +145,8 @@ a{
     display: none;
   }
 }
+
+.css-13cymwt-control{
+  background-color: transparent !important;
+  border: none !important;
+}

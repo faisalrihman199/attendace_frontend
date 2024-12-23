@@ -15,39 +15,44 @@ const AddAthlete = () => {
     const fileInputRef = useRef(null); // Create a ref for the file input
     const [emailToggled, setEmailToggle] = useState(true);
     const [selectedValue, setSelectedValue] = useState('team');
+    const [selectedGroups,setSelectedGroups]=useState([])
     const [selectedTeamClass, setSelectedTeamClass] = useState(''); // State for the selected dropdown value
     const [teams, setTeams] = useState([]);
     const [classes, setClasses] = useState([]);
     const [photo, setPhoto] = useState(null);
     const [loading, setLoading] = useState(false);
-    const { allTeams, generatePin, addStudent, checkPin } = useAPI(); // Destructure both functions from context
+    const { allTeams, generatePin, addStudent, checkPin,oneAthlete } = useAPI(); // Destructure both functions from context
     const [pinLength, setLength] = useState(0);
     let server = import.meta.env.VITE_APP_API_URL || '';
     const navigate = useNavigate();
     const location = useLocation();
 
+    const availableTeams = teams.filter((team) => !selectedGroups.includes(team));
+
     const { athlete } = location.state || {};
     const pinValue = watch('pin') || 0;
     const [isOkay, setOkay] = useState(false);
-
+    console.log("Athlete is :", athlete);
+    
     useEffect(() => {
-        if (pinValue && pinValue.length === pinLength) {
+        if (pinValue && pinValue.length === pinLength && !athlete) {
             console.log("PIN reached the required length:", pinValue);
             checkPin(pinValue)
-            .then((res)=>{
-                if(res.success){
-                    setOkay(true);
-                }
-                else{
-                    toast.error(res.message)
-                }
-                
-            })
-            .catch((err)=>{
-                console.log("Error ");
-            })
+                .then((res) => {
+                    if (res.success) {
+                        setOkay(true);
+                    }
+                    else {
+
+                        toast.error(res.message)
+                    }
+
+                })
+                .catch((err) => {
+                    console.log("Error ");
+                })
         }
-        if(pinValue.length < pinLength || pinValue.length < pinLength ){
+        if (pinValue.length < pinLength || pinValue.length < pinLength) {
             setOkay(false);
         }
     }, [pinValue, pinLength]);
@@ -64,6 +69,10 @@ const AddAthlete = () => {
                 console.error("Error:", err);
             });
     }, [allTeams]);
+    
+    const selectedIds = selectedGroups.map(team => team.id);
+    const filteredTeams = teams.filter(team => !selectedIds.includes(team.id));
+    const filteredClasses = classes.filter(clas => !selectedIds.includes(clas.id));
 
     useEffect(() => {
         if (athlete) {
@@ -71,13 +80,22 @@ const AddAthlete = () => {
             const formattedDateOfBirth = athlete.dateOfBirth
                 ? new Date(athlete.dateOfBirth).toLocaleDateString('en-GB') // Convert date to dd/mm/yyyy
                 : '';
-
+            oneAthlete(athlete.id)
+            .then((res)=>{
+                console.log("Response :", res);
+                setSelectedGroups(res?.data?.athleteGroups);
+                
+            })
+            .catch((err)=>{
+                console.error("Error:", err);
+            })
             reset({
                 pin: athlete.pin || '',
                 name: athlete.name || '',
                 email: athlete.email || '',
                 dateOfBirth: formattedDateOfBirth,
                 description: athlete.description || '',
+
 
             });
 
@@ -154,13 +172,12 @@ const AddAthlete = () => {
 
 
     const onSubmit = (data) => {
-        if (!selectedTeamClass) {
+        if (selectedGroups.length<1) {
             toast.error("Please Select a team or Class");
             return;
         }
-        
         setLoading(true);
-        data.athleteGroupId = selectedTeamClass;
+        data.athleteGroupIds = selectedIds;
         data.active = emailToggled;
         const formData = new FormData();
 
@@ -168,7 +185,7 @@ const AddAthlete = () => {
         for (const key in data) {
             formData.append(key, data[key]);
         }
-        if(photo){
+        if (photo) {
             formData.append('photo', photo);
         }
         console.log("Form Data:", Object.fromEntries(formData));
@@ -194,40 +211,59 @@ const AddAthlete = () => {
             })
         // Handle form submission logic here
     };
+    const handleGroupSelect = (val) => {
+        const selection = JSON.parse(val && val)
+        console.log("Selection is :", selection);
+        setSelectedGroups((prevGroups) => [...prevGroups, selection]);
+        console.log("Selected Groups :", selectedGroups);
+    }
+    const handleRemoveGroup=(group)=>{
+        const id=group.id;
+        setSelectedGroups((prevSelectedGroups) =>
+            prevSelectedGroups.filter(group => group.id !== id)
+        );
+    }
+    
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className='poppins-regular'>
             <div className='d-flex align-items-center bg_dede mb-3 password_fields rounded pe-3'>
                 <input
                     type='number'
+                    readOnly={athlete}
                     placeholder='Student ID / PIN'
 
                     className="form-control p-2"
-                    {...register('pin', {
-                        required: 'Student PIN is required', minLength: {
-                            value: pinLength,
-                            message: `Athlete PIN must be exactly ${pinLength} digits`,
-                        },
-                        maxLength: {
-                            value: pinLength,
-                            message: `Athlete PIN must be exactly ${pinLength} digits`,
+                    {...register('pin',
+                        !athlete &&
+                        {
+                            required: 'Student PIN is required',
+
+                            minLength: {
+                                value: pinLength,
+                                message: `Athlete PIN must be exactly ${pinLength} digits`,
+                            },
+                            maxLength: {
+                                value: pinLength,
+                                message: `Athlete PIN must be exactly ${pinLength} digits`,
+                            }
                         }
-                    })}
+                    )}
                     style={{ backgroundColor: 'transparent', border: 'none' }}
                 />
                 {
                     !athlete &&
-                    <span className='cursor-pointer poppins-thin d-flex align-items-center' onClick={handlePin}> 
-                    {
-                        isOkay?
-                        <SiTicktick  className='mx-2' color='green'  />
+                    <span className='cursor-pointer poppins-thin d-flex align-items-center' onClick={handlePin}>
+                        {
+                            isOkay ?
+                                <SiTicktick className='mx-2' color='green' />
 
-                        :
-                        <RxCrossCircled className='mx-2' color='red' />
+                                :
+                                <RxCrossCircled className='mx-2' color='red' />
 
-                    }
-                    
-                    Generate
+                        }
+
+                        Generate
                     </span>
                 }
 
@@ -252,9 +288,9 @@ const AddAthlete = () => {
                         type="email"
                         className="form-control p-2 bg_dede"
                         placeholder='Student Email'
-                        {...register('email', { required: 'Student Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email address' } })}
+                        {...register('email')}
                     />
-                    {errors.email && <span className="text-danger">{errors.email.message}</span>}
+
                 </div>
             </div>
 
@@ -272,9 +308,8 @@ const AddAthlete = () => {
                                 e.target.type = 'text';
                             }
                         }}
-                        {...register('dateOfBirth', { required: 'Date of Birth is required' })}
+                        {...register('dateOfBirth')}
                     />
-                    {errors.dateOfBirth && <span className="text-danger">{errors.dateOfBirth.message}</span>}
                 </div>
             </div>
 
@@ -335,25 +370,42 @@ const AddAthlete = () => {
                 <div className="col-sm-12">
                     <select
                         className="form-select p-2 bg_dede"
-                        value={selectedTeamClass}
-                        onChange={(e) => setSelectedTeamClass(e.target.value)}
+
+                        onChange={(e) => handleGroupSelect(e.target.value)}
 
                     >
                         <option value="">Select {selectedValue === 'team' ? 'Team' : 'Class'} Name</option>
-                        {selectedValue === 'team'
-                            ? teams.map((team) => (
-                                <option key={team.id} value={team.id}>
+                        {selectedValue === 'team' 
+                            ? filteredTeams.map((team) => (
+                                <option key={team.id} value={JSON.stringify(team)}>
                                     {team.groupName}
                                 </option>
                             ))
-                            : classes.map((cls) => (
-                                <option key={cls.id} value={cls.id}>
+                            : filteredClasses.map((cls) => (
+                                <option key={cls.id} value={JSON.stringify(cls)}>
                                     {cls.groupName}
                                 </option>
                             ))}
                     </select>
                 </div>
             </div>
+
+            {selectedGroups &&
+                selectedGroups.map((group, index) => (
+                    <div
+                        key={index}
+                        className="d-inline-flex flex-wrap mx-2 align-items-center bg-light border rounded-pill px-2 py-1 my-2"
+                    >
+                        <span className="me-2 text-sm">{group.groupName}</span>
+                        <button
+                            type="button"
+                            className="btn-close text-danger btn-xs"
+                            aria-label="Close"
+                            onClick={() => handleRemoveGroup(group)}
+                        ></button>
+                    </div>
+                ))}
+
 
             <div className="mb-3">
                 <p className='font-20 ms-1' style={{ fontSize: '18px' }}>Upload Photo</p>
@@ -385,11 +437,11 @@ const AddAthlete = () => {
                     loading ?
                         <>
                             <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            Adding ...
+                            Saving ...
                         </>
                         :
                         <button type="submit" className="btn mx-2 rounded btns poppins-medium" style={{ width: '180px' }}>
-                            Add
+                            {athlete?'Update':'Add'}
                         </button>
 
                 }

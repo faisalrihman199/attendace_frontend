@@ -124,7 +124,7 @@ const AthleteManagement = ({query}) => {
                     rows={athletes.map((athlete, index) => ({
                         athleteId: athlete.pin,
                         athleteName: athlete.name,
-                        team: athlete.athleteGroup.groupName,
+                        team: athlete.groupName,
                         action: (
                             <div>
                                 <i

@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import OtpInput from 'react-otp-input';
 import "../../assets/CSS/OTP_Verification.css";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAPI } from '../../contexts/Apicontext';
 import { toast } from 'react-toastify';
 
 const OTP_Verification = () => {
     const email = sessionStorage.getItem("forgotEmail");
     const send_otp = sessionStorage.getItem("otpEmail");
+    const location=useLocation();
+    let forgotData=location.state;
     const [otp, setOtp] = useState('');
     const [isHovered, setIsHovered] = useState(false);
     const [loading, setLoading] = useState(false); // New loading state
     const navigate = useNavigate();
-    const { verifyOtp,signup } = useAPI();
+    const {verifyForgotOTP ,verifyOtp,signup,resetPassword } = useAPI();
 
     // Default input style for desktop and tablets (3em)
     const inputStyle = {
@@ -24,7 +26,7 @@ const OTP_Verification = () => {
         fontSize: '20px',
         textAlign: 'center',
     };
-
+    
     const resendOTP = async() => {
         setLoading(true);
         const email_otp = email ? email : send_otp;
@@ -102,19 +104,22 @@ const OTP_Verification = () => {
 
     const handleSubmitForgotEmail = async () => {
         setLoading(true);
-        console.log("Submit this otp for forgotEmail:", otp);
-
-        const data = {
-            email: email,
-            otp,
-        };
+        forgotData.otp=otp;
 
         try {
-            // Handle forgot email OTP verification
-            console.log("Forgot Email is:", email);
-            // Process response
+            const res = await resetPassword(forgotData);
+            if(res.success){
+                toast.success(res.message) ;
+                sessionStorage.removeItem("forgotEmail");
+                navigate('/login');
+            }
+            else{
+                toast.error(res.message);
+            }
         } catch (err) {
             console.error("Error:", err);
+            toast.error(err.message);
+
         } finally {
             setLoading(false);
         }

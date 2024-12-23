@@ -11,29 +11,29 @@ const Contact = () => {
     const { register, handleSubmit } = useForm();
     const location = useLocation();
     const isAdmin = location.pathname.includes('/admin');
-    const {contact}=useAPI();
-    const [loading,setLoading]=useState(false);
+    const { contact } = useAPI();
+    const [loading, setLoading] = useState(false);
     const onSubmit = (data) => {
         console.log("Form Data: ", data);
         setLoading(true);
         contact(data)
-        .then((res)=>{
-            if(res.success){
-                toast.success(res.message)
-            }
-            else{
-                toast.error(res.message)
+            .then((res) => {
+                if (res.success) {
+                    toast.success(res.message)
+                }
+                else {
+                    toast.error(res.message)
 
-            }
-        })
-        .catch((err)=>{
-            console.log("Error :", err);
-            toast.error("Contact Send failed")
-            
-        })
-        .finally(()=>{
-            setLoading(false);
-        })
+                }
+            })
+            .catch((err) => {
+                console.log("Error :", err);
+                toast.error("Contact Send failed")
+
+            })
+            .finally(() => {
+                setLoading(false);
+            })
 
     };
 
@@ -45,14 +45,24 @@ const Contact = () => {
                     <h1 className='top_heading poppins-medium color_bao'>Contact Us</h1>
                     <p className='poppins-light my-2' style={{ fontSize: '16px' }}>Here is some information about us.</p>
                 </div>
-                <div className="my-2">
-                    <h1 className='font-20 poppins-medium my-2'>Our Address</h1>
-                    <p className='poppins-light my-2' style={{ fontSize: '16px' }}>123 Elm Street, Springfield, London, SW1A 1AA, United Kingdom</p>
-                </div>
+
                 <div className="my-2">
                     <h1 className='font-20 poppins-medium my-2'>Our Phone No.</h1>
-                    <p className='poppins-light my-2' style={{ fontSize: '16px' }}>0245 23323231</p>
+                    <p className='poppins-light my-2' style={{ fontSize: '16px' }}>
+                        <a href="tel:4843742300" style={{ textDecoration: 'none', color: 'blue' }}>
+                            484 374 2300
+                        </a>
+                    </p>
                 </div>
+                <div className="my-2">
+                    <h1 className='font-20 poppins-medium my-2'>Our Email Address</h1>
+                    <p className='poppins-light my-2' style={{ fontSize: '16px' }}>
+                        <a href="mailto:Info@attendance.net" style={{ textDecoration: 'none', color: 'blue' }}>
+                            Info@attendance.net
+                        </a>
+                    </p>
+                </div>
+
                 <div className="my-3">
                     <p className='poppins-light my-2' style={{ fontSize: '20px' }}>Or you can email us your queries.</p>
                 </div>
@@ -60,76 +70,76 @@ const Contact = () => {
                     <div className="my-2">
                         <div className="row">
                             <div className="col-md-6 col-sm-12 mb-1">
-                                <input 
-                                    type="text" 
-                                    className="form-control p-2 bg_dede" 
-                                    placeholder='First Name' 
+                                <input
+                                    type="text"
+                                    className="form-control p-2 bg_dede"
+                                    placeholder='First Name'
                                     {...register('firstName', { required: true })}
                                 />
                             </div>
                             <div className="col-md-6 col-sm-12 mb-1">
-                                <input 
-                                    type="text" 
-                                    className="form-control p-2 bg_dede" 
-                                    placeholder='Last Name' 
+                                <input
+                                    type="text"
+                                    className="form-control p-2 bg_dede"
+                                    placeholder='Last Name'
                                     {...register('lastName', { required: true })}
                                 />
                             </div>
                         </div>
                         <div className="row mb-1">
                             <div className="col-sm-12">
-                                <input 
-                                    type="text" 
-                                    className="form-control my-2 p-2 bg_dede" 
-                                    placeholder='Business Name' 
+                                <input
+                                    type="text"
+                                    className="form-control my-2 p-2 bg_dede"
+                                    placeholder='Business Name'
                                     {...register('businessName')}
                                 />
                             </div>
                         </div>
                         <div className="row mb-1">
                             <div className="col-sm-12">
-                                <input 
-                                    type="text" 
-                                    className="form-control my-2 p-2 bg_dede" 
-                                    placeholder='Phone No.' 
+                                <input
+                                    type="text"
+                                    className="form-control my-2 p-2 bg_dede"
+                                    placeholder='Phone No.'
                                     {...register('phoneNumber')}
                                 />
                             </div>
                         </div>
                         <div className="row mb-1">
                             <div className="col-sm-12">
-                                <input 
-                                    type="email" 
-                                    className="form-control my-2 p-2 bg_dede" 
-                                    placeholder='Email Address' 
+                                <input
+                                    type="email"
+                                    className="form-control my-2 p-2 bg_dede"
+                                    placeholder='Email Address'
                                     {...register('email', { required: true })}
                                 />
                             </div>
                         </div>
                         <div className="mb-3">
-                            <textarea 
-                                placeholder='Message' 
-                                className='form-control p-2 bg_dede' 
-                                rows={5} 
-                                style={{ resize: 'none' }} 
+                            <textarea
+                                placeholder='Message'
+                                className='form-control p-2 bg_dede'
+                                rows={5}
+                                style={{ resize: 'none' }}
                                 {...register('message', { required: true })}
                             ></textarea>
                         </div>
                         <div className="my-2">
                             {
-                                loading?
-                                <>
-                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                Sending...
-                            </>
-                                :
-                                <button 
-                                    type="submit" 
-                                    className="btn mx-2 btns poppins-medium" 
-                                    style={{ width: '150px' }}
-                                >
-                                    Send
-                                </button>
+                                loading ?
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Sending...
+                                    </>
+                                    :
+                                    <button
+                                        type="submit"
+                                        className="btn mx-2 btns poppins-medium"
+                                        style={{ width: '150px' }}
+                                    >
+                                        Send
+                                    </button>
 
                             }
                         </div>

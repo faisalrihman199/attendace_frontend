@@ -13,6 +13,7 @@ import Contact from './Pages/Admin/ChildAdmin/Contact';
 import CheckIn from './Pages/CheckIn/CheckIn';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ResetPassword from './Pages/Auth/ResetPassword';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/otpVerify" element={<OTP_Verification />} />
+          <Route path="/reset" element={<ResetPassword />} />
           <Route path="/subscription" element={<Subscription />} />
           <Route path="/contact" element={<Contact />} />
 

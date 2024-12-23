@@ -56,17 +56,17 @@ const NavbarComponent = () => {
             <div className="profile-icon" onClick={() => setShowProfileDropdown(!showProfileDropdown)} style={{ cursor: 'pointer' }}>
               <img src={person} height={40} width={40} alt="Profile Icon" />
             </div>
-
             {/* Dropdown menu when profile icon is clicked */}
             {showProfileDropdown && (
               <div className="dropdown-menu show" style={{ position: 'absolute', right: 0, top: '50px' }}>
-                <Link to="/root/profile" className="dropdown-item" onClick={()=>setShowProfileDropdown(false)} >Profile</Link>
+                <Link to="/root/profile" className="dropdown-item" onClick={() => setShowProfileDropdown(false)}>Profile</Link>
+                <Link to="/root/templates" className="dropdown-item" onClick={() => setShowProfileDropdown(false)}>Templates</Link>
+                
                 <Link to="/login" className="dropdown-item">Logout</Link>
               </div>
             )}
           </div>
         )}
-
         {/* Navbar links for non-root URLs */}
         {!isRootUrl && 
           <div className={`collapse navbar-collapse ${isExpanded ? 'show' : ''}`} id="navbarNav">
@@ -76,11 +76,14 @@ const NavbarComponent = () => {
                   Contact Us
                 </Link>
               </li>
+              
               <li className="nav-item">
                 <Link to="/signup" className="nav-link barlow-semibold color_bao">
                   SignUp / Login
                 </Link>
               </li>
+              {/* Add the Templates link here */}
+              
             </ul>
           </div>
         }

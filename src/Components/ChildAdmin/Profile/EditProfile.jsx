@@ -101,7 +101,7 @@ const EditProfile = ({ profile }) => {
                         <label className="poppins-regular font-20 ms-1 prfile_label" htmlFor="email">Email Address</label>
                         <input
                             type="email"
-                            readOnly
+                            readOnly={isRoot}
                             className="form-control"
                             id="email"
                             placeholder='Email Address'
