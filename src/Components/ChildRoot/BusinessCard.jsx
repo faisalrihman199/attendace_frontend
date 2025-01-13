@@ -107,15 +107,22 @@ const BusinessCard = ({business,setChange}) => {
                 </div>
                 <div className="d-flex my-2 align-items-center justify-content-end">
                 <span className='mx-2 cursor-pointer' style={{height:'25px'}}>
-                        <FaEdit size={25} onClick={handleEdit} />
-                        </span>
+                        <i 
+                            className="bi-pencil mx-2 cursor-pointer" 
+                            style={{ cursor: 'pointer', fontSize:'25px' }} 
+                            onClick={handleEdit}
+                        ></i>
+                    </span>
                     <span className='mx-2 cursor-pointer' style={{height:'25px'}}>
                         {
                             loading===1?
                             <Loading />
                             :
-                            <FaTrash size={25} onClick={confirmDelete} />
-
+                            <i 
+                            className="bi-trash mx-2" 
+                            style={{ cursor: 'pointer', fontSize:'25px' }} 
+                            onClick={confirmDelete}
+                            ></i>                        
                         }
                     </span>
                 </div>

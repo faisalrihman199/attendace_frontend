@@ -115,6 +115,7 @@ const CardInfo = ({ edit, cardData }) => {
                 }),
             });
 
+            console.log(result);
             const result = await response.json();
             if (response.ok) {
                 toast.success('Payment processed successfully');
@@ -132,70 +133,86 @@ const CardInfo = ({ edit, cardData }) => {
 
     return (
         <>
-            <div className="form-group">
-                <label htmlFor="cardholder-name" className="mx-1 poppins-medium">Cardholder Name</label>
-                <input
-                    type="text"
-                    id="cardholder-name"
-                    className="form-control p-2 bg_dede"
-                    placeholder="Full name on card"
-                    value={cardholderName}
-                    onChange={(e) => setCardholderName(e.target.value)}
-                />
+            <div className="row mb-3 form-group">
+                <div className="col-sm-12 tooltip-container">
+                    <label htmlFor="cardholder-name" className="form-label">
+                    Cardholder Name
+                    </label>
+                    <span className="tooltip-text-right">Input the full name as shown on the credit card</span>
+                    <input
+                        type="text"
+                        id="cardholder-name"
+                        className="form-control p-2 bg_dede"
+                        placeholder="Full name on card"
+                        value={cardholderName}
+                        onChange={(e) => setCardholderName(e.target.value)}
+                    />
+                </div>
             </div>
 
-            <div className="form-group">
-                <label htmlFor="card-element" className="mx-1 poppins-medium">Card Information</label>
-                <div id="card-element" style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}></div>
-                <div id="card-errors" role="alert" style={{ color: 'red', marginTop: '10px' }}></div>
-                {cardData && (
-                    <div className="mt-2">
-                        <input
-                            type="text"
-                            className="form-control p-2 bg_dede mb-3"
-                            readOnly
-                            value={`**** **** **** ${last4}`}
-                        />
-                        <input
-                            type="text"
-                            className="form-control p-2 bg_dede"
-                            readOnly
-                            value={`${expMonth} / ${expYear}`}
-                        />
-                    </div>
-                )}
+            <div className="row mb-3 form-group">
+                <div className="col-sm-12 tooltip-container">
+                    <label htmlFor="card-element" className="form-label">
+                    Card Information
+                    </label>
+                    <span className="tooltip-text-right">Input the numerical credit card information. This includes the 16-digit card number, expiration date, and cvc numbers.</span>
+                    <div id="card-element" style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}></div>
+                    <div id="card-errors" role="alert" style={{ color: 'red', marginTop: '10px' }}></div>
+                    {cardData && (
+                        <div className="mt-2">
+                            <input
+                                type="text"
+                                className="form-control p-2 bg_dede mb-3"
+                                readOnly
+                                value={`**** **** **** ${last4}`}
+                            />
+                            <input
+                                type="text"
+                                className="form-control p-2 bg_dede"
+                                readOnly
+                                value={`${expMonth} / ${expYear}`}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
 
             {!cardData && (
-                <div className="form-group">
-                    <label htmlFor="plan" className="mx-1 poppins-medium">Select a Plan</label>
-                    <select
+                <div className="row mb-3 form-group">
+                    <div className="col-sm-12 tooltip-container">
+                        <label htmlFor="plan" className="form-label">Select a Plan</label>
+                        <span className="tooltip-text-right">Select a monthly subscription plan</span>
+                        <select
                         id="plan"
                         className="form-control p-2 bg_dede"
                         value={plan}
                         onChange={(e) => setPlan(e.target.value)}
-                    >
-                        <option value="">Select a Plan</option>
-                        <option value="30">30$ Plan</option>
-                        <option value="45">45$ Plan</option>
-                    </select>
+                        >
+                            <option value="">Select a Plan</option>
+                            <option value="30">{'Starter - Up to 50 Athletes ($30/month)'}</option>
+                            <option value="45">{'Premium - Unlimited Athletes ($45/month)'}</option>
+                        </select>
+                    </div>
                 </div>
             )}
 
-            <div className="form-group">
-                <label htmlFor="country" className="mx-1 poppins-medium">Country or Region</label>
-                <select
-                    id="country"
-                    className="form-control p-2 bg_dede"
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                >
-                    <option value="">Select Country</option>
-                    <option value="US">United States</option>
-                </select>
+            <div className="row mb-3 form-group">
+                <div className="col-sm-12 tooltip-container">
+                    <label htmlFor="country" className="form-label">Country or Region</label>
+                    <span className="tooltip-text-right">Select your country or region</span>
+                    <select
+                        id="country"
+                        className="form-control p-2 bg_dede"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                    >
+                        <option value="">Select Country</option>
+                        <option value="US">United States</option>
+                    </select>
+                </div>
             </div>
 
-            <div className="row my-2">
+            <div className="row mb-3 my-2">
                 <div className={btn}>
                     {loading ? (
                         <div className="text-center">

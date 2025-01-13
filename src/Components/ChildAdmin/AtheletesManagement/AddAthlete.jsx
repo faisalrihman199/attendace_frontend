@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { RxCrossCircled } from 'react-icons/rx';
 import { SiTicktick } from 'react-icons/si';
+import { showToastNotification } from '../../Utilities/toastNotification';
 
 const AddAthlete = () => {
     const { register, handleSubmit, getValues, setValue, reset, watch, formState: { errors } } = useForm();
@@ -224,20 +225,97 @@ const AddAthlete = () => {
         );
     }
     
+    const retrunToAthletesManage = async () => {
+        // Defined nav functions
+        const functionsMap = {
+            navigateAway: () => navigate('/admin/athletes'),
+            stayOnPage: () => console.log('Staying on the page...'),
+        };
+        try {
+
+            // Default input object
+            const inputValues = {
+                athleteGroups: selectedGroups,
+                dateOfBirth: '',
+                description: '',
+                email: '',
+                name: '',
+                pin: '',
+            };
+
+            // Dynamic element value fetch
+            Object.keys(inputValues).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) inputValues[key] = element.value || '';
+            });
+            
+            // Defined input keys
+            const keysToCheck = ['athleteGroups', 'dateOfBirth', 'description', 'email', 'name', 'pin'];
+
+            // Navigation logic
+            // Verify if changes have been made or not
+            const shouldNavigateAway = !athlete
+                ? keysToCheck.every(key => {
+                    const inputValue = inputValues[key];
+                    const condition = Array.isArray(inputValue)
+                        ? inputValue.every((group, index) => group.groupName === (athlete?.[key]?.[index]?.groupName || ''))
+                        : inputValue === '';
+                    // console.log(`Key: ${key}, Input Value: ${JSON.stringify(inputValue)}, Condition: ${condition}`);
+                    return condition;
+                })
+                : keysToCheck.every(key => {
+                    const inputValue = inputValues[key];
+                    const athleteValue = athlete[key];
+                    const condition = key === 'athleteGroups'
+                        ? inputValue.every((group, index) => group.groupName === (athleteValue?.[index]?.groupName || ''))
+                        : key === 'dateOfBirth'
+                            ? new Date(athleteValue).toLocaleDateString('en-GB') === inputValue
+                            : athleteValue === inputValue;
+            
+                    // console.log(`Key: ${key}, Athlete Value: ${JSON.stringify(athleteValue)}, Input Value: ${JSON.stringify(inputValue)}, Condition: ${condition}`);
+                    return condition;
+                });
+            
+            // Navigate if true, else throw warning notification                                    
+            if (shouldNavigateAway) {
+                navigate('/admin/athletes')
+            } else {
+                showToastNotification({
+                    message: 'You have unsaved changes. Are you sure you want to cancel?',
+                    confirmText: 'Confirm',
+                    confirmFunction: 'navigateAway',
+                    cancelText: 'Cancel',
+                    cancelFunction: 'stayOnPage',
+                    functionsMap
+                });
+            }
+        } catch (err) {
+            console.log("Error :", err);
+            toast.error(err.message);
+        }
+    }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className='poppins-regular'>
-            <div className='d-flex align-items-center bg_dede mb-3 password_fields rounded pe-3'>
-                <input
-                    type='number'
+                <div className="col-sm-12 tooltip-container">
+                    <label htmlFor="pin" className="form-label">
+                        Student ID / PIN
+                    </label>
+                    <span className="tooltip-text-right">Input a Student PIN or click generate to auto populate</span>
+                </div>
+                <div className="d-flex align-items-center bg_dede mb-3 password_fields rounded pe-3">
+                    <input
+                    type="number"
+                    inputMode="numeric" 
+                    pattern="[0-9]*"
                     readOnly={athlete}
-                    placeholder='Student ID / PIN'
-
+                    placeholder='Student ID / PIN (Required)'
+                    id="pin"
                     className="form-control p-2"
                     {...register('pin',
                         !athlete &&
                         {
-                            required: 'Student PIN is required',
+                            required: 'Student ID / PIN (Required)',
 
                             minLength: {
                                 value: pinLength,
@@ -266,38 +344,51 @@ const AddAthlete = () => {
                         Generate
                     </span>
                 }
-
             </div>
             {errors.pin && <span className="text-danger ms-3">{errors.pin.message}</span>}
 
             <div className="row mb-3">
-                <div className="col-sm-12">
+                <div className="col-sm-12 tooltip-container">
+                    <label htmlFor="name" className="form-label">
+                        Student/Athlete Name
+                    </label>
+                    <span className="tooltip-text-right">Input the name of the athlete</span>
                     <input
                         type="text"
+                        id="name"
                         className="form-control p-2 bg_dede"
-                        placeholder='Student Name'
-                        {...register('name', { required: 'Student Name is required' })}
+                        placeholder='Student Name (Required)'
+                        {...register('name', { required: 'Student Name (Required)' })}
                     />
                     {errors.name && <span className="text-danger">{errors.name.message}</span>}
                 </div>
             </div>
 
             <div className="row mb-3">
-                <div className="col-sm-12">
+                <div className="col-sm-12 tooltip-container">
+                    <label htmlFor="email" className="form-label">
+                        Email
+                    </label>
+                    <span className="tooltip-text-right">Input the email for the athlete or athlete's parent/guardian</span>
                     <input
                         type="email"
+                        id="email"
                         className="form-control p-2 bg_dede"
                         placeholder='Student Email'
                         {...register('email')}
                     />
-
                 </div>
             </div>
 
-            <div className="row">
-                <div className="col-md-12 col-sm-12 mb-3">
+            <div className="row mb-3">
+                <div className="col-sm-12 tooltip-container">
+                    <label htmlFor="dateOfBirth" className="form-label">
+                        Date of Birth
+                    </label>
+                    <span className="tooltip-text-right">Input the athlete's date of birth</span>
                     <input
                         type="text"
+                        id="dateOfBirth"
                         className="form-control p-2 bg_dede"
                         placeholder="Date of Birth"
                         onFocus={(e) => {
@@ -314,9 +405,14 @@ const AddAthlete = () => {
             </div>
 
             <div className="row mb-3">
-                <div className="col-sm-12">
+                <div className="col-sm-12 tooltip-container">
+                    <label htmlFor="description" className="form-label">
+                        Description
+                    </label>
+                    <span className="tooltip-text-right">Add additional comments or description to this athlete record</span>
                     <input
                         type="text"
+                        id="description"
                         className="form-control p-2 bg_dede"
                         placeholder='Description'
                         {...register('description')}
@@ -370,9 +466,7 @@ const AddAthlete = () => {
                 <div className="col-sm-12">
                     <select
                         className="form-select p-2 bg_dede"
-
                         onChange={(e) => handleGroupSelect(e.target.value)}
-
                     >
                         <option value="">Select {selectedValue === 'team' ? 'Team' : 'Class'} Name</option>
                         {selectedValue === 'team' 
@@ -430,14 +524,14 @@ const AddAthlete = () => {
             </div>
 
             <div className="d-flex my-2 justify-content-end">
-                <button className="btn rounded color_bao poppins-medium" style={{ borderColor: '#247BA0', width: '180px' }} onClick={resetForm} >
+                <button type="button" className="btn rounded color_bao poppins-medium" style={{ borderColor: '#247BA0', width: '180px' }} onClick={retrunToAthletesManage} >
                     Cancel
                 </button>
                 {
                     loading ?
                         <>
                             <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            Saving ...
+                            { athlete ? 'Saving...' : 'Adding...' }
                         </>
                         :
                         <button type="submit" className="btn mx-2 rounded btns poppins-medium" style={{ width: '180px' }}>

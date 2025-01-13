@@ -187,9 +187,9 @@ const CheckIn = () => {
                                 <div className="my-3">
                                     <p className='poppins-regular font-20 mb-2 ms-1'>Enter PIN to Check-In</p>
                                     <input
-                                        type="text" // Use 'text' or 'tel' for better compatibility
-                                        inputMode="numeric" // Ensures number keyboard on mobile
-                                        pattern="[0-9]*" // Optional: restrict input to numbers
+                                        type="number"
+                                        inputMode="numeric" 
+                                        pattern="[0-9]*"
                                         className="form-control p-2 bg_dede mb-2"
                                         placeholder="PIN"
                                         autoComplete="new-password"

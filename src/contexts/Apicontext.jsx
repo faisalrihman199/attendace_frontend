@@ -9,7 +9,9 @@ const APIProvider = ({ children }) => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
+  console.log(import.meta.env);
   const server = import.meta.env.VITE_APP_API_URL;
+  
   console.log("Server is :", server);
 
 

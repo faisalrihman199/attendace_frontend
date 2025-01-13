@@ -113,58 +113,87 @@ const Settings = () => {
             :
             <div className="container p-4 poppins-regular">
                 <div className='mt-3'>
-                    <h1 className='top_heading poppins-medium color_bao'>SETTING</h1>
+                    <h1 className='top_heading poppins-medium color_bao'>BUSINESS SETTINGS</h1>
+                </div>
 
+                <div className='mt-3'>
                     <div className="my-2">
-                        <h1 className='font-20 poppins-medium my-2'>Business Details</h1>
-
-                        <div className="mb-3">
-                            <input
-                                type="text"
-                                className="form-control p-2 bg_dede"
-                                placeholder='Business Name'
-                                {...register('name')}
-                            />
+                        <div className="row mb-3">
+                            <div className="col-sm-12 tooltip-container">
+                                <label htmlFor="name" className="form-label">
+                                    Business Name
+                                </label>
+                                <span className="tooltip-text-right">Input the name for this business.</span>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    className="form-control p-2 bg_dede"
+                                    placeholder='Business Name'
+                                    {...register('name')}
+                                />
+                            </div>
                         </div>
 
-                        <div className="mb-3">
-                            <textarea
-                                name="message"
-                                placeholder='Custom Message'
-                                className='form-control p-2 bg_dede'
-                                rows={5}
-                                style={{ resize: 'none' }}
-                                {...register('message')}
-                            ></textarea>
-                        </div>
-                        <p className='font-20 ms-1' style={{ fontSize: '18px' }}>Athlete ID PIN Length</p>
-                        <div className="my-3">
-                            <input
-                                type="number"
-                                min="3"
-                                max="7"
-                                className="form-control p-2 bg_dede"
-                                placeholder='PIN Length any number'
-                                {...register('pinLength')}
-                            />
+                        <div className="row mb-3">
+                            <div className="col-sm-12 tooltip-container">
+                                <label htmlFor="message" className="form-label">
+                                    Welcome Message
+                                </label>
+                                <span className="tooltip-text-right">Input a message users will see when checking-in athletes.</span>
+                                <textarea
+                                    name="message"
+                                    id="message"
+                                    placeholder='Welcome Message'
+                                    className='form-control p-2 bg_dede'
+                                    rows={5}
+                                    style={{ resize: 'none' }}
+                                    {...register('message')}
+                                ></textarea>
+                            </div>
                         </div>
 
-                        <p className='font-20 ms-1' style={{ fontSize: '18px' }}>Select a Time Zone</p>
-                        <div className="my-3">
-                            <TimezoneSelect
-                                value={timeZone}
-                                onChange={(timezone) => setValue('timezone', timezone.value)}
-                                placeholder="Select Time Zone"
-                                className="form-control p-2 bg_dede"
-                                styles={{backgroundColor:'transparent'}}
-                            />
+                        <div className="row mb-3">
+                            <div className="col-sm-12 tooltip-container">
+                                <label htmlFor="pinNumber" className="form-label">
+                                    Athlete ID PIN Length
+                                </label>
+                                <span className="tooltip-text-right">Define the PIN length for athlete IDs.</span>
+                                <input
+                                    type="number"
+                                    id="pinNumber"
+                                    min="3"
+                                    max="7"
+                                    className="form-control p-2 bg_dede"
+                                    placeholder='PIN Length any number'
+                                    {...register('pinLength')}
+                                    />
+                            </div>
                         </div>
 
-                        <div className="mb-3">
-                            <p className='font-20 ms-1' style={{ fontSize: '18px' }}>Upload Logo</p>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <div onClick={handleUploadClick} style={{ cursor: 'pointer' }}>
+                        <div className="row mb-3">
+                            <div className="col-sm-12 tooltip-container">
+                                <label htmlFor="pinNumber" className="form-label">
+                                    Time Zone
+                                </label>
+                                <span className="tooltip-text-right">Define the timezone.</span>
+                                <TimezoneSelect
+                                    id="timezone"
+                                    value={timeZone}
+                                    onChange={(timezone) => setValue('timezone', timezone.value)}
+                                    placeholder="Select Time Zone"
+                                    className="form-control p-2 bg_dede"
+                                    styles={{backgroundColor:'transparent'}}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="row mb-3">
+                            <div className="col-sm-12 tooltip-container">
+                                <label htmlFor="pinNumber" className="form-label">
+                                    Logo
+                                </label>
+                                <span className="tooltip-text-right">Upload a logo or image for this business.</span>
+                                <div onClick={handleUploadClick} style={{ cursor: 'pointer' }}>
                                         {imageSrc ? (
                                             <img src={imageSrc} alt="Uploaded Logo" style={{ width: '400px', maxWidth: '100%', height: '300px', objectFit: 'cover' }} />
                                         ) : (
@@ -178,9 +207,12 @@ const Settings = () => {
                                         style={{ display: 'none' }}
                                         accept="image/*"
                                     />
-                                </div>
                             </div>
                         </div>
+                    </div>
+
+
+
 
                         <div className="my-2 d-flex justify-content-end">
                             {
@@ -197,7 +229,6 @@ const Settings = () => {
                         </div>
                     </div>
                 </div>
-            </div>
     );
 };
 

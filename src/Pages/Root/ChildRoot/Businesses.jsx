@@ -66,18 +66,18 @@ const Businesses = () => {
                     <div className="my-3 d-flex flex-wrap justify-content-between align-items-center">
                         {/* Search Field */}
                         <div className="input-group my-2" style={{ width: '300px' }}>
-                            
+                            <span className="input-group-text bg-white cursor-pointer" onClick={hanldeSearch} style={{ borderRadius: '20 20px 20px 20px' }}>
+                                <i className="bi bi-search" style={{ color: '#888' }}></i>
+                            </span>
+
                             <input
                                 type="text"
-                                className="form-control border-end-0"
+                                className="form-control"
                                 placeholder="Search businesses..."
                                 value={search}
                                 onChange={handleSearchChange}
-                                style={{ borderRadius: '0 0px 0px 0' }}
+                                style={{ borderRadius: '0 5px 5px 0' }}
                             />
-                            <span className="input-group-text bg-white border-start-0 cursor-pointer" onClick={hanldeSearch} style={{ borderRadius: '20 20px 20px 20px' }}>
-                                <i className="bi bi-search" style={{ color: '#888' }}></i>
-                            </span>
                         </div>
 
                         {/* Add Business Button */}

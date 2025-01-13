@@ -9,6 +9,7 @@ import { useAPI } from '../../../contexts/Apicontext'
 import Loading from "../../../Components/Loading"
 import CryptoJS from "crypto-js";
 import { AiOutlineTeam, AiOutlineUser } from 'react-icons/ai'
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     const {businessDashboard}=useAPI();
@@ -19,6 +20,7 @@ const Dashboard = () => {
     const [lastLogins,setLogins]=useState([]);
     const [businessName, setBusiness]=useState('');
     const [businessId,setBusinessId]=useState(null);
+    const navigate=useNavigate();
     const server = import.meta.env.VITE_APP_URL;
     const secretKey = import.meta.env.VITE_APP_SECRET_KEY;
     function encryptBusinessId(num) {
@@ -67,7 +69,7 @@ const Dashboard = () => {
             </div>
             <div className="my-3">
                 <div className="row m-3 ms-0">
-                    <div className="col-md-6 col-sm-12 p-2">
+                    <div className="col-md-6 col-sm-12 p-2  cursor-pointer" onClick={() => navigate('/admin/athletes')}>
                         <div className=" bg_dede p-3 py-4" style={{ borderRadius: '15px' }}>
                             <div className="d-flex">
                                 <div className='mx-2'>
@@ -87,7 +89,7 @@ const Dashboard = () => {
 
                     </div>
 
-                    <div className="col-md-6 col-sm-12 p-2">
+                    <div className="col-md-6 col-sm-12 p-2 cursor-pointer" onClick={() => navigate('/admin/teams')}>
                         <div className=" bg_dede p-3 py-4" style={{ borderRadius: '15px' }}>
                             <div className="d-flex">
                                 <div className='mx-2 mt-1'>

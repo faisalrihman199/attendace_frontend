@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useAPI } from '../../../contexts/Apicontext';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { showToastNotification } from '../../Utilities/toastNotification';
 
 const AddTeam = () => {
     const [selectedValue, setSelectedValue] = useState('team');
@@ -52,6 +53,38 @@ const AddTeam = () => {
             })
 
     }
+
+    const returnToTeamManage = () => {
+        // Defined nav functions
+        const functionsMap = {
+            navigateAway: () => navigate('/admin/teams'),
+            stayOnPage: () => console.log('Staying on the page...'),
+        };
+        try {
+
+            // Define input to be validated
+            const inputElement = document.getElementById('groupName');
+            const inputValue = inputElement.value;
+
+            // Navigate if true, else throw warning notification                                    
+            if ((!team && inputValue == '') || (team?.groupName == inputValue)) {
+                navigate('/admin/teams')
+            } else {
+                showToastNotification({
+                    message: 'You have unsaved changes. Are you sure you want to cancel?',
+                    confirmText: 'Confirm',
+                    confirmFunction: 'navigateAway',
+                    cancelText: 'Cancel',
+                    cancelFunction: 'stayOnPage',
+                    functionsMap
+                });
+            }
+        } catch (err) {
+            console.log("Error :", err);
+            toast.error(err.message);
+        }
+    }
+
     return (
         <>
             <div className="my-3">
@@ -87,29 +120,36 @@ const AddTeam = () => {
                     </div>
                 </div>
             </div>
+
             <div className="row mb-3">
-                <div className="col-sm-12">
+                <div className="col-sm-12 tooltip-container">
+                    <label htmlFor="groupName" className="form-label">
+                        Team/Class Name
+                    </label>
+                    <span className="tooltip-text-right">Input the name of your team or class</span>
                     <input
                         type="text"
+                        id="groupName"
                         className="form-control p-2 bg_dede"
-                        placeholder='Team/Class Name'
+                        placeholder="Team/Class Name"
                         {...register('groupName')}
                     />
                 </div>
             </div>
+
             <div className="d-flex my-2 justify-content-end">
-                <button className="btn rounded color_bao poppins-medium " onClick={() => { setValue('groupName', '') }} style={{ borderColor: '#247BA0', width: '180px' }}>
+                <button className="btn rounded color_bao poppins-medium " onClick={returnToTeamManage} style={{ borderColor: '#247BA0', width: '180px' }}>
                     Cancel
                 </button>
                 {
                     loading ?
                         <>
                             <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            Adding ...
+                            { team ? 'Saving...' : 'Adding...' }
                         </>
                         :
                         <button className="btn mx-2 rounded  btns poppins-medium  " onClick={handleGroup} style={{ width: '180px' }}>
-                            Add
+                            { team ? 'Save' : 'Add' }
                         </button>
                 }
             </div>

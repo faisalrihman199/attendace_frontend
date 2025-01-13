@@ -23,7 +23,7 @@ const TeamManage = ({searchName}) => {
     const qry=`name=${searchName}`
     allGroups(currentPage,qry)
         .then((res) => {
-            console.log("All Groups:", res.data);
+            // console.log("All Groups:", res.data);
             setGroups(res.data.AtheleteGroups); 
             setCurrentPage(res.data.currentPage);
             setTotalPages(res.data.totalPages);
@@ -37,22 +37,22 @@ const TeamManage = ({searchName}) => {
 }, [currentPage, change,searchName]);
 
   const headNames=[
-    'Team Name',
-    'Team/Class',
+    'Name',
+    'Type',
     'Action',
   ];
   
   const handleDelete = (id) => {
     confirmAlert({
-        title: 'Confirm Deletion',
-        message: 'Are you sure you want to delete?',
+        title: 'WARNING',
+        message: 'You are about to delete this Team/Class. This action cannot be undone. Are you sure you wish to proceed?',
         buttons: [
             {
-                label: 'Yes',
+                label: 'Proceed',
                 onClick: () =>confirmDelete(id)
             },
             {
-                label: 'No',
+                label: 'Cancel',
                 onClick: () => console.log("Deletion cancelled")
             }
         ]
@@ -100,7 +100,6 @@ useEffect(()=>{
   console.log("Sort Value Changed :", sortValue);
   setGroups(sortGroups(teams,sortValue,sorting));
 },[sortValue,sorting])
-    
     return (
       loading?
       <Loading />
@@ -113,21 +112,28 @@ useEffect(()=>{
             setSorting={setSorting}
             rows={teams.map((team,index)=> ({
               athleteName: team.groupName,
-              team: team.category,
+              team: team.category ? team.category.charAt(0).toUpperCase() + team.category.slice(1) : '',
               action: (
+                
                 <div>
+                  <div className="tooltip-container-icon">
                     <i 
-                      className="bi-pencil mx-2" 
+                      className="bi-pencil mx-2 action-icon" 
                       style={{ cursor: 'pointer' }} 
                       onClick={() => {
                         navigate('/admin/teams/add', { state: { team } });
                       }}
                     ></i>
+                    <span className="tooltip-text-bottom">Edit</span>
+                  </div>
+                  <div className="tooltip-container-icon">
                     <i 
-                      className="bi-trash mx-2" 
+                      className="bi-trash mx-2 action-icon" 
                       style={{ cursor: 'pointer' }} 
                       onClick={() => handleDelete(team.id)}
                     ></i>
+                    <span className="tooltip-text-bottom">Delete</span>
+                  </div>
                 </div>
               ),
             }))}
