@@ -41,9 +41,9 @@ body {
   background-color: #fafbfe;
 
 }
-aside{
+/* aside{
     height: 100vh;
-}
+} */
 
 #sidebar {
   width: 70px;
@@ -100,8 +100,9 @@ a.sidebar-link {
   font-weight: 400;
   white-space: nowrap;
   border-left: 3px solid transparent;
-  
+  border-radius: 20px;
 }
+
 .active_link{
     background-color: #98B7B7;
     border: 1px solid transparent;

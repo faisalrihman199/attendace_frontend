@@ -127,19 +127,24 @@ const AthleteManagement = ({query}) => {
                         team: athlete.groupName,
                         action: (
                             <div>
-                                <i
-                                    className="bi-pencil mx-2"
-                                    style={{ cursor: 'pointer' }}
+                                <div className="tooltip-container-icon">
+                                    <i 
+                                    className="bi-pencil mx-2 action-icon" 
+                                    style={{ cursor: 'pointer' }} 
                                     onClick={() => {
-                                        // Navigate to AddAthlete with athlete data
                                         navigate('/admin/athletes/add', { state: { athlete } });
                                     }}
-                                ></i>
-                                <i
-                                    className="bi-trash mx-2"
-                                    style={{ cursor: 'pointer' }}
+                                    ></i>
+                                    <span className="tooltip-text-bottom">Edit</span>
+                                </div>
+                                <div className="tooltip-container-icon">
+                                    <i 
+                                    className="bi-trash mx-2 action-icon" 
+                                    style={{ cursor: 'pointer' }} 
                                     onClick={() => handleDelete(athlete.id)}
-                                ></i>
+                                    ></i>
+                                    <span className="tooltip-text-bottom">Delete</span>
+                                </div>
                             </div>
                         ),
                     }))}

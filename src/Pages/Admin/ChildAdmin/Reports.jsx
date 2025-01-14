@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { useAPI } from '../../../contexts/Apicontext';
 import Pagination from '../../../Components/Pagination';
 import Loading from '../../../Components/Loading';
+import { FaFileExport } from 'react-icons/fa';
 
 const Reports = () => {
   // State variables for input and select
@@ -151,8 +152,14 @@ const Reports = () => {
       <Loading />
     ) : (
       <div className="container p-4">
+        <div className='mt-3'>
+          <h1 className='top_heading poppins-medium color_bao'>ATHLETE CHECK-IN REPORT</h1>
+        </div>
+
         <div className="mt-3">
-          <div className="row">
+
+        {/* First Row: Search, Filter, Apply Filters */}
+        <div className="row">
             <div className="col-md-4 col-sm-12 my-2">
               <div className="d-flex align-items-center bg_dede password_fields rounded pe-3">
                 <i className="bi-search mx-3" style={{ cursor: 'pointer' }}></i>
@@ -172,80 +179,90 @@ const Reports = () => {
                 value={selectedOption}
                 onChange={(e) => setSelectedOption(e.target.value)}
               >
-                <option value="">Filter</option>
+                <option value="">Type</option>
                 <option value="pin">ID</option>
                 <option value="athleteName">Name</option>
                 <option value="groupName">Team/Class</option>
               </select>
             </div>
-            <div className="col-md-4 col-sm-12 my-2">
-              <div className="row">
-              <div className="col-md-6 col-sm-12">
-              <input
-                    type="text"
-                    className="form-control bg_dede"
-                    placeholder='Start Date'
-                    value={startDate}
-                    onFocus={(e) => {
-                      e.target.type = 'date';
-                  }}
-                  onBlur={(e) => {
-                      if (!e.target.value) {
-                          e.target.type = 'text';
-                      }
-                  }}
-                    onChange={(e) => setStartDate(e.target.value)}
-                  />
-                </div>
-                <div className="col-md-6 col-sm-12 my-2">
-                  <input
-                    type="text"
-                    placeholder='End Date'
-                    className="form-control bg_dede"
-                    value={endDate}
-                    onFocus={(e) => {
-                      e.target.type = 'date';
-                  }}
-                  onBlur={(e) => {
-                      if (!e.target.value) {
-                          e.target.type = 'text';
-                      }
-                  }}
-                    onChange={(e) => setEndDate(e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="row mt-3">
-            <div className="col-md-6 col-sm-12 my-2">
+            <div className="col-md-1 col-sm-12 my-2" />
+            <div className="col-md-3 col-sm-12 my-2">
               <button
                 className="bg_dede bg_dede_btn poppins-medium p-3 px-4 w-100"
                 style={{ borderRadius: '20px', color: '#50514F', fontSize: '16px', border: 'none' }}
                 onClick={handleGetStarted}
               >
-                GET STARTED
+                Apply Filters
               </button>
             </div>
-            <div className="col-md-6 col-sm-12">
+          </div>
+
+          {/* Second Row: Start Date, End Date, Clear All */}
+          <div className="row mt-3">
+            <div className="col-md-4 col-sm-12 my-2">
+              <input
+                type="text"
+                className="form-control bg_dede"
+                placeholder="Start Date"
+                value={startDate}
+                onFocus={(e) => {
+                  e.target.type = 'date';
+                }}
+                onBlur={(e) => {
+                  if (!e.target.value) {
+                    e.target.type = 'text';
+                  }
+                }}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+            <div className="col-md-4 col-sm-12 my-2">
+              <input
+                type="text"
+                placeholder="End Date"
+                className="form-control bg_dede"
+                value={endDate}
+                onFocus={(e) => {
+                  e.target.type = 'date';
+                }}
+                onBlur={(e) => {
+                  if (!e.target.value) {
+                    e.target.type = 'text';
+                  }
+                }}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
+            <div className="col-md-1 col-sm-12 my-2" />
+            <div className="col-md-3 col-sm-12 my-2">
               <button
                 className="bg_dede bg_dede_btn poppins-medium p-3 px-4 w-100"
                 style={{ borderRadius: '20px', color: '#50514F', fontSize: '16px', border: 'none' }}
                 onClick={handleClearAll}
               >
-                Clear All
+                Reset
               </button>
             </div>
-          </div>
+          </div>        
         </div>
-        <div className="my-4">
+        {/* <div className="my-4">
           <h1 className="font-20 poppins-medium my-2">Athlete List</h1>
-        </div>
-        <div className="d-flex my-2 justify-content-end">
-          <p className="poppins-medium cursor-pointer" onClick={handlePrint}>
-            Export Report
-          </p>
-        </div>
+        </div> */}
+        <div className="row mt-3">
+          <div className="col-md-4 col-sm-12 my-2" />
+          <div className="col-md-4 col-sm-12 my-2" />
+          <div className="col-md-1 col-sm-12 my-2" />
+          <div className="col-md-3 col-sm-12 my-2">
+            <button
+              className="bg_dede bg_dede_btn poppins-medium p-3 px-4 w-100"
+              style={{ borderRadius: '20px', color: '#50514F', fontSize: '16px', border: 'none' }}
+              onClick={handlePrint}
+            >
+            <FaFileExport size={25} style={{ paddingRight: '10px' }} />
+              Export Report
+            </button>
+          </div>
+        </div>        
         {checkData.length > 0 ? (
           <div className="my-3">
             <TableView

@@ -36,7 +36,7 @@ export default function CustomizedTables({ headNames, rows, setSortValue, setSor
   };
 
   return (
-    <TableContainer component={Paper} className='poppins-regular' style={{ boxShadow: '0px solid ' }}>
+    <TableContainer component={Paper} className='poppins-regular' style={{ boxShadow: '0px solid ', minHeight: '325px' }}>
       <Table
         sx={{
           minWidth: 700,
@@ -44,6 +44,7 @@ export default function CustomizedTables({ headNames, rows, setSortValue, setSor
           border: 'none', 
         }}
         aria-label="customized table"
+        className='manage-table'
       >
         <TableHead>
           <TableRow>

@@ -89,12 +89,12 @@ const Sidebar = () => {
               <span className="mx-2 mt-1">Help</span>
             </Link>
           </li>
-          <li className="sidebar-item my-2">
+          {/* <li className="sidebar-item my-2">
             <Link to="/admin/contact" className={`sidebar-link d-flex mx-2 ${isActive('contact') ? 'active_link' : ''}`}>
               <div><Contact /></div>
               <span className="mx-2 mt-1">Contact Us</span>
             </Link>
-          </li>
+          </li> */}
         </ul>
         <div className="sidebar-footer">
           <Link to="/admin/profile" className={`sidebar-link mx-2 ${isActive('profile') ? 'active_link' : ''}`}>
