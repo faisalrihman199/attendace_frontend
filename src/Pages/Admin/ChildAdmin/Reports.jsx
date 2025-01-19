@@ -52,8 +52,8 @@ const Reports = () => {
     
 
     const qryParts = [];
-    if (selectedOption && searchInput) {
-      qryParts.push(`${selectedOption}=${searchInput}`);
+    if (searchInput) {
+      qryParts.push(`query=${searchInput}`);
     }
     if (startDate) {
       qryParts.push(`startDate=${startDate}`);
@@ -174,7 +174,7 @@ const Reports = () => {
               </div>
             </div>
             <div className="col-md-4 col-sm-12 my-2">
-              <select
+              {/* <select
                 className="form-control bg_dede"
                 value={selectedOption}
                 onChange={(e) => setSelectedOption(e.target.value)}
@@ -183,7 +183,7 @@ const Reports = () => {
                 <option value="pin">ID</option>
                 <option value="athleteName">Name</option>
                 <option value="groupName">Team/Class</option>
-              </select>
+              </select> */}
             </div>
             <div className="col-md-1 col-sm-12 my-2" />
             <div className="col-md-3 col-sm-12 my-2">
@@ -192,7 +192,7 @@ const Reports = () => {
                 style={{ borderRadius: '20px', color: '#50514F', fontSize: '16px', border: 'none' }}
                 onClick={handleGetStarted}
               >
-                Apply Filters
+                Search
               </button>
             </div>
           </div>

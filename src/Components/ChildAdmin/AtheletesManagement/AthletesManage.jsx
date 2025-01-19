@@ -24,6 +24,7 @@ const AthleteManagement = ({query}) => {
         'Team/Class',
         'Action',
     ];
+    
 
     useEffect(() => {
         setLoading(true);
@@ -72,7 +73,6 @@ const AthleteManagement = ({query}) => {
       .catch((err)=>{
         console.log("Error :", err);
         toast.error("Failed to delete athlete");
-        
       })
       .finally(()=>{
 

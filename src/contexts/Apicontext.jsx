@@ -250,9 +250,13 @@ const APIProvider = ({ children }) => {
     return response.data;
   };
 
-  const businessDashboard = async () => {
+  const businessDashboard = async (period) => {
     let url = `${server}/business/stats`
-    const response = await axios.get(forAdmin(url), getConfig());
+    url=forAdmin(url);
+    if (period) {
+      url += `${url.includes('?') ? '&' : '?'}period=${period}`;
+    }
+    const response = await axios.get(url, getConfig());
     return response.data;
   };
   const billingDashboard = async () => {

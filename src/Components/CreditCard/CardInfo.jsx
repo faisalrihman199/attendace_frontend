@@ -16,6 +16,7 @@ const CardInfo = ({ edit, cardData }) => {
 
     const localUser = JSON.parse(localStorage.getItem('user'));
     const stripe_key = import.meta.env.VITE_APP_STRIPE_KEY;
+    console.log("Stripe Key is :", stripe_key);
     const server = import.meta.env.VITE_APP_API_URL;
     const btn = edit ? 'col-md-3 col-sm-12' : 'col-12';
 

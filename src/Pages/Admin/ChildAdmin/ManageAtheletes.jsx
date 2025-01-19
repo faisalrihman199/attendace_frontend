@@ -9,13 +9,10 @@ const ManageAtheletes = () => {
   const [query, setQuery] = useState(null);
 
   const handleQuery = () => {
-    if (!searchInput && !selectedOption) {
-      toast.error("Please provide search input or date range");
-      return null;
-    }
+   
     const qryParts = [];
-    if (selectedOption && searchInput) {
-      qryParts.push(`${selectedOption}=${searchInput}`);
+    if (searchInput) {
+      qryParts.push(`query=${searchInput}`);
     }
     const qry = qryParts.join('&');
     setQuery(qry);
@@ -54,18 +51,13 @@ const ManageAtheletes = () => {
 
           {/* Select Section */}
           <div className="col-md-3 col-sm-12 my-3">
-            <select
-              className="form-control bg_dede"
-              value={selectedOption}
-              onChange={(e) => {
-                setSelectedOption(e.target.value)
-              }}
-            >
-              <option value="">Type</option>
-              <option value="athleteId">ID</option>
-              <option value="athleteName">Name</option>
-              <option value="groupName">Team/Class</option>
-            </select>
+          <button
+                className="bg_dede bg_dede_btn poppins-medium p-3 px-4 w-100"
+                style={{ borderRadius: '20px', color: '#50514F', fontSize: '16px', border: 'none' }}
+                onClick={handleQuery}
+              >
+                Search
+              </button>
           </div>
 
           <div className="col-md-3 col-sm-12 my-3 d-flex justify-content-end">
@@ -94,13 +86,7 @@ const ManageAtheletes = () => {
           </div>
 
           <div className="col-md-3 col-sm-12 my-3">
-          <button
-                className="bg_dede bg_dede_btn poppins-medium p-3 px-4 w-100"
-                style={{ borderRadius: '20px', color: '#50514F', fontSize: '16px', border: 'none' }}
-                onClick={handleQuery}
-              >
-                Apply Filters
-              </button>
+         
           </div>
 
           <div className="col-md-3 col-sm-12 my-3 d-flex justify-content-end">

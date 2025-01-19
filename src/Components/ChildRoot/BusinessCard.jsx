@@ -11,7 +11,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; 
 
 const BusinessCard = ({business,setChange}) => {
-    const [emailToggled, setEmailToggle] = useState(business?.status==='active'?true:false);
+    const [emailToggled, setEmailToggle] = useState(business?.status==='active'?false:true);
     const {deleteBussiness,updateBussinessStatus}=useAPI();
     const navigate=useNavigate();
     const [loading,setLoading]=useState(0);
@@ -94,7 +94,7 @@ const BusinessCard = ({business,setChange}) => {
                     <strong>Owner:</strong> {business.ownerName}
                 </p>
                 <div className="d-flex align-items-center">
-                    <p className='poppins-regular my-2' style={{ fontSize: '16px' }}><strong>Active</strong> </p>
+                    <p className='poppins-regular my-2' style={{ fontSize: '16px' }}><strong>Paid</strong> </p>
                     {
                         loading===2?
                         <Loading />
