@@ -11,13 +11,15 @@ import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; 
 
 const BusinessCard = ({business,setChange}) => {
-    const [emailToggled, setEmailToggle] = useState(business?.status==='active'?false:true);
-    const {deleteBussiness,updateBussinessStatus}=useAPI();
+    console.log("Business is :", business);
+    
+    const [emailToggled, setEmailToggle] = useState(business?.status==='active'?true:false);
+    const [paidToggled, setPaidToggled] = useState(business?.trialPaid);
+    const {deleteBussiness,updateBussinessStatus,updateTrialPaid}=useAPI();
     const navigate=useNavigate();
     const [loading,setLoading]=useState(0);
     const handleEmailToggle = () => {
-        setLoading(2);
-        
+        setLoading(2); 
         updateBussinessStatus(business.id).
         then((res)=>{
             if(res.success){
@@ -38,6 +40,28 @@ const BusinessCard = ({business,setChange}) => {
         })
         
     };
+    const handlePaidToggle =() => {
+        setLoading(3); 
+        updateTrialPaid(business.id).
+        then((res)=>{
+            if(res.success){
+                toast.success(res.message);
+                setPaidToggled(prevState => !prevState);
+            }
+            else{
+                toast.error(res.message);
+                
+            }
+        })
+        .catch((err)=>{
+            console.log("Error :", err);
+            toast.error(err.message);
+        })
+        .finally(()=>{
+            setLoading(0);
+        })
+        
+    };  
     const handleEdit=()=>{
         sessionStorage.setItem('currentBussiness',business.userId);
         navigate('/admin/dashboard');
@@ -93,8 +117,9 @@ const BusinessCard = ({business,setChange}) => {
                 <p className='my-1 poppins-regular' style={{ fontSize: '16px' }}>
                     <strong>Owner:</strong> {business.ownerName}
                 </p>
+                <div className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center">
-                    <p className='poppins-regular my-2' style={{ fontSize: '16px' }}><strong>Paid</strong> </p>
+                    <p className='poppins-regular my-2' style={{ fontSize: '16px' }}><strong>Active</strong> </p>
                     {
                         loading===2?
                         <Loading />
@@ -104,6 +129,20 @@ const BusinessCard = ({business,setChange}) => {
                         </IconButton>
 
                     }
+                </div>
+                <div className="d-flex align-items-center">
+                    <p className='poppins-regular my-2' style={{ fontSize: '16px' }}><strong>Trial Paid</strong> </p>
+                    {
+                        loading===3?
+                        <Loading />
+                        :
+                        <IconButton onClick={handlePaidToggle} style={{ color: paidToggled?'#247BA0':'white' }}>
+                            {paidToggled ? <ToggleOn fontSize="large" /> : <ToggleOff fontSize="large" />}
+                        </IconButton>
+
+                    }
+                </div>
+
                 </div>
                 <div className="d-flex my-2 align-items-center justify-content-end">
                 <span className='mx-2 cursor-pointer' style={{height:'25px'}}>

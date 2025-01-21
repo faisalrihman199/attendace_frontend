@@ -111,6 +111,10 @@ const APIProvider = ({ children }) => {
     const response = await axios.get(`${server}/business/updateBusinessStatus/${id}`, getConfig());
     return response.data;
   };
+  const updateTrialPaid = async (id) => {
+    const response = await axios.get(`${server}/business/updateTrialPaid/${id}`, getConfig());
+    return response.data;
+  };
   const allTemplates = async () => {
     const response = await axios.get(`${server}/user/getMailTemplates`, getConfig());
     return response.data;
@@ -309,7 +313,7 @@ const APIProvider = ({ children }) => {
   const provider = {
     login, signup, sendOtp, verifyForgotOTP, resetPassword,//auth
     userProfile, createUser, contact, updateProfile,   //user
-    allBussineses, deleteBussiness, updateBussinessStatus, addBussiness, getBussiness, businessDashboard, allTemplates, saveTemplete,          //bussinesses
+    allBussineses, deleteBussiness, updateBussinessStatus,updateTrialPaid, addBussiness, getBussiness, businessDashboard, allTemplates, saveTemplete,          //bussinesses
     addTeam, allTeams, generatePin, allGroups, deleteGroup, checkPin,                         //Team/Class
     addStudent,oneAthlete, allStudents, deleteStudent, checkIn, checkIndata, uploadAthletesCSV,                                         //Athelete
     getReporting, updateReporting, billingDashboard, paymentHistory, reportPDF, changePLan,                      //Reporting

@@ -237,3 +237,8 @@ a{
   height: '100%';
   text-align: 'center';
 }
+
+.css-fso5qs-MuiResponsiveChart-container>svg{
+  width: 120% !important;
+  margin-left: 20% !important;
+}
