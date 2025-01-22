@@ -53,6 +53,7 @@ const Reports = () => {
 
     const qryParts = [];
     if (searchInput) {
+      
       qryParts.push(`query=${searchInput}`);
     }
     if (startDate) {
@@ -61,7 +62,7 @@ const Reports = () => {
     if (endDate) {
       qryParts.push(`endDate=${endDate}`);
     }
-
+    setCurrentPage(1);
     const qry = qryParts.join('&');
     setQuery(qry);
     console.log("Query is:", qry);

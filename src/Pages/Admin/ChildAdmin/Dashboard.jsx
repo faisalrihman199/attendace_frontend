@@ -76,8 +76,8 @@ const Dashboard = () => {
         { short: "Nov", full: "November" },
         { short: "Dec", full: "December" },
     ]
-    const [month,setMonth]=useState('Jan');
-
+    const currentMonth = months[new Date().getMonth()];
+    const [month,setMonth]=useState(currentMonth?.short || 'Feb');
     useEffect(()=>{
         setData(sortMonth(month,originalData));
     },[month]);
@@ -88,7 +88,11 @@ const Dashboard = () => {
         });
     }
     const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const [currentDay,setCurrentDay]=useState("Sunday");
+    const today = new Date().getDay();
+    console.log("Today is :", weekdays[today]);
+    
+    
+    const [currentDay,setCurrentDay]=useState(weekdays[today || 0]);
     function sortWeek(weekRange, groupData) {
         // Create the result array
         const result = groupData.map(group => {
@@ -129,7 +133,7 @@ const Dashboard = () => {
                         if (option==='weekly'){
                             const weekRanges = getAllWeekRanges(res?.data?.groupData);
                             setWeeks(weekRanges);
-                            weekRanges.length>0 && setCurrentWeek(weekRanges[0])
+                            weekRanges.length>3 && setCurrentWeek(weekRanges[3])
                             weekRanges.length>0 && setData(sortWeek(weekRanges[0],res?.data?.groupData))
                         } 
                     }
@@ -238,55 +242,55 @@ const Dashboard = () => {
                             value={option}
                             onChange={(e) => setOption(e.target.value)}
                         >
-                            <option value="year">Yearly</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="daily">Daily</option>
+                            <option value="year">Year</option>
+                            <option value="monthly">Month</option>
+                            <option value="weekly">Week</option>
+                            <option value="daily">Today</option>
                         </select>
                     </div>
                     {
-                        option==="monthly" ?
-                        <div className="col-md-3 col-sm-12 my-2">
-                            <select
-                                className="form-control bg_dede"
-                                value={month}
-                                onChange={(e) => setMonth(e.target.value)}
-                            >
-                                {months.map((monthData) => (
-                                    <option key={monthData.short} value={monthData.short}>
-                                        {monthData.full}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                         : option==="daily" ?
-                        <div className="col-md-3 col-sm-12 my-2">
-                            <select
-                                className="form-control bg_dede"
-                                value={currentDay}
-                                onChange={(e) => setCurrentDay(e.target.value)}
-                            >
-                                {weekdays.map((day) => (
-                                    <option value={day}>
-                                        {day}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                         : option==="weekly" && 
-                        <div className="col-md-3 col-sm-12 my-2">
-                            <select
-                                className="form-control bg_dede"
-                                value={currentWeek}
-                                onChange={(e) => setCurrentWeek(e.target.value)}
-                            >
-                                {weeks.map((week) => (
-                                    <option value={week}>
-                                        {week}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        // option==="monthly" ?
+                        // <div className="col-md-3 col-sm-12 my-2">
+                        //     <select
+                        //         className="form-control bg_dede"
+                        //         value={month}
+                        //         onChange={(e) => setMonth(e.target.value)}
+                        //     >
+                        //         {months.map((monthData) => (
+                        //             <option key={monthData.short} value={monthData.short}>
+                        //                 {monthData.full}
+                        //             </option>
+                        //         ))}
+                        //     </select>
+                        // </div>
+                        //  : option==="daily" ?
+                        // <div className="col-md-3 col-sm-12 my-2">
+                        //     <select
+                        //         className="form-control bg_dede"
+                        //         value={currentDay}
+                        //         onChange={(e) => setCurrentDay(e.target.value)}
+                        //     >
+                        //         {weekdays.map((day) => (
+                        //             <option value={day}>
+                        //                 {day}
+                        //             </option>
+                        //         ))}
+                        //     </select>
+                        // </div>
+                        //  : option==="weekly" && 
+                        // <div className="col-md-3 col-sm-12 my-2">
+                        //     <select
+                        //         className="form-control bg_dede"
+                        //         value={currentWeek}
+                        //         onChange={(e) => setCurrentWeek(e.target.value)}
+                        //     >
+                        //         {weeks.map((week) => (
+                        //             <option value={week}>
+                        //                 {week}
+                        //             </option>
+                        //         ))}
+                        //     </select>
+                        // </div>
                     }
                 </div>
                 <div className="my-3" >
