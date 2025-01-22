@@ -77,6 +77,8 @@ const Reports = () => {
 
   const handlePrint = () => {
     const qry = handleQuery();
+    console.log("Go and Get Data :", qry);
+    
     reportPDF(qry)
       .then((res) => {
         console.log("Response object:", res);

@@ -31,9 +31,9 @@ const AthleteManagement = ({query}) => {
         allStudents(currentPage,query)
             .then((res) => {
                 console.log("All Students:", res.data);
-                setAthletes(res.data.athletes); 
-                setCurrentPage(res.data.currentPage);
-                setTotalPages(res.data.totalPages);
+                setAthletes(res?.data?.athletes); 
+                setCurrentPage(res?.data?.currentPage);                
+                setTotalPages(res?.data?.totalPages);
             })
             .catch((err) => {
                 console.log("Error:", err);

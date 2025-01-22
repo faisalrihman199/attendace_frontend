@@ -119,6 +119,7 @@ const Dashboard = () => {
     const [weeks,setWeeks]=useState([])
     useEffect(() => {
             setLoading(true);
+            
             businessDashboard(option)
                 .then((res) => {
                     console.log("Response Data  for Business is :", res.data);
@@ -132,9 +133,11 @@ const Dashboard = () => {
                         option==='daily' && setData(sortDaily(currentDay,res?.data?.groupData))
                         if (option==='weekly'){
                             const weekRanges = getAllWeekRanges(res?.data?.groupData);
+                            console.log("Data for week is :", res.data.groupData);
+                            
                             setWeeks(weekRanges);
                             weekRanges.length>3 && setCurrentWeek(weekRanges[3])
-                            weekRanges.length>0 && setData(sortWeek(weekRanges[0],res?.data?.groupData))
+                            weekRanges.length>3 && setData(sortWeek(weekRanges[3],res?.data?.groupData))
                         } 
                     }
                     setLogins(res.data.last3Logins);
