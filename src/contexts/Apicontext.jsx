@@ -175,6 +175,11 @@ const APIProvider = ({ children }) => {
     const response = await axios.post(forAdmin(url), data, getConfig());
     return response.data;
   };
+  const resendWelcomeEmail = async (id) => {
+    let url = `${server}/athelete/sendWelcomeEmail?id=${id}`;
+    const response = await axios.get(url, getConfig());
+    return response.data;
+  };
   const oneAthlete = async (id) => {
     let url = `${server}/athelete/getOne`
     url = forAdmin(url);
@@ -254,11 +259,14 @@ const APIProvider = ({ children }) => {
     return response.data;
   };
 
-  const businessDashboard = async (period) => {
+  const businessDashboard = async (period,group) => {
     let url = `${server}/business/stats`
     url=forAdmin(url);
     if (period) {
       url += `${url.includes('?') ? '&' : '?'}period=${period}`;
+    }
+    if (group) {
+      url += `${url.includes('?') ? '&' : '?'}group=${group}`;
     }
     const response = await axios.get(url, getConfig());
     return response.data;
@@ -315,7 +323,7 @@ const APIProvider = ({ children }) => {
     userProfile, createUser, contact, updateProfile,   //user
     allBussineses, deleteBussiness, updateBussinessStatus,updateTrialPaid, addBussiness, getBussiness, businessDashboard, allTemplates, saveTemplete,          //bussinesses
     addTeam, allTeams, generatePin, allGroups, deleteGroup, checkPin,                         //Team/Class
-    addStudent,oneAthlete, allStudents, deleteStudent, checkIn, checkIndata, uploadAthletesCSV,                                         //Athelete
+    addStudent,resendWelcomeEmail,oneAthlete, allStudents, deleteStudent, checkIn, checkIndata, uploadAthletesCSV,                                         //Athelete
     getReporting, updateReporting, billingDashboard, paymentHistory, reportPDF, changePLan,                      //Reporting
     getConfig,
     verifyOtp

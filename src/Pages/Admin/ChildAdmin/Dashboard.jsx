@@ -61,6 +61,7 @@ const Dashboard = () => {
     
     
     const [option, setOption] = useState('year');
+    const [group, setGroup] = useState('team');
     const [originalData, setOriginalData]=useState([]);
     const months = [
         { short: "Jan", full: "January" },
@@ -120,7 +121,7 @@ const Dashboard = () => {
     useEffect(() => {
             setLoading(true);
             
-            businessDashboard(option)
+            businessDashboard(option,group)
                 .then((res) => {
                     console.log("Response Data  for Business is :", res.data);
                     setStudents(res.data.totalAthletes);
@@ -152,7 +153,7 @@ const Dashboard = () => {
                 })
         
 
-    }, [option])
+    }, [option,group])
     useEffect(()=>{
         setData(sortWeek(currentWeek,originalData));
     },[currentWeek])
@@ -251,50 +252,18 @@ const Dashboard = () => {
                             <option value="daily">Today</option>
                         </select>
                     </div>
-                    {
-                        // option==="monthly" ?
-                        // <div className="col-md-3 col-sm-12 my-2">
-                        //     <select
-                        //         className="form-control bg_dede"
-                        //         value={month}
-                        //         onChange={(e) => setMonth(e.target.value)}
-                        //     >
-                        //         {months.map((monthData) => (
-                        //             <option key={monthData.short} value={monthData.short}>
-                        //                 {monthData.full}
-                        //             </option>
-                        //         ))}
-                        //     </select>
-                        // </div>
-                        //  : option==="daily" ?
-                        // <div className="col-md-3 col-sm-12 my-2">
-                        //     <select
-                        //         className="form-control bg_dede"
-                        //         value={currentDay}
-                        //         onChange={(e) => setCurrentDay(e.target.value)}
-                        //     >
-                        //         {weekdays.map((day) => (
-                        //             <option value={day}>
-                        //                 {day}
-                        //             </option>
-                        //         ))}
-                        //     </select>
-                        // </div>
-                        //  : option==="weekly" && 
-                        // <div className="col-md-3 col-sm-12 my-2">
-                        //     <select
-                        //         className="form-control bg_dede"
-                        //         value={currentWeek}
-                        //         onChange={(e) => setCurrentWeek(e.target.value)}
-                        //     >
-                        //         {weeks.map((week) => (
-                        //             <option value={week}>
-                        //                 {week}
-                        //             </option>
-                        //         ))}
-                        //     </select>
-                        // </div>
-                    }
+                    <div className="col-md-3 col-sm-12 my-2">
+                        <select
+                            className="form-control bg_dede"
+                            value={group}
+                            onChange={(e) => setGroup(e.target.value)}
+                        >
+
+                            <option value="team">Teams</option>
+                            <option value="class">Classes</option>
+                        </select>
+                    </div>
+                    
                 </div>
                 <div className="my-3" >
                     {chartData &&

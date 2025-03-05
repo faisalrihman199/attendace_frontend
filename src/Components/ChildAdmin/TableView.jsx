@@ -36,7 +36,7 @@ export default function CustomizedTables({ headNames, rows, setSortValue, setSor
   };
 
   return (
-    <TableContainer component={Paper} className='poppins-regular' style={{ boxShadow: '0px solid ', minHeight: '325px' }}>
+    <TableContainer component={Paper} className='poppins-regular' style={{ boxShadow: '0px solid ',overflowY:'hidden', minHeight: '325px' }}>
       <Table
         sx={{
           minWidth: 700,

@@ -19,6 +19,9 @@ const Reports = () => {
   const [loading, setLoading] = useState(0);
   const [checkData, setCheckIn] = useState([]);
 
+  // New state to handle export format
+  const [exportFormat, setExportFormat] = useState('pdf');
+
   const headNames = [
     'Athlete ID',
     'Athlete Name',
@@ -49,11 +52,8 @@ const Reports = () => {
   }, [currentPage, query]);
 
   const handleQuery = () => {
-    
-
     const qryParts = [];
     if (searchInput) {
-      
       qryParts.push(`query=${searchInput}`);
     }
     if (startDate) {
@@ -69,17 +69,14 @@ const Reports = () => {
     return qry;
   };
 
-  // Function to handle button click
-  const handleGetStarted = () => {
+  // Function to trigger export based on the provided format
+  const handleExport = (format) => {
     const qry = handleQuery();
-    if (!qry) return;
-  };
+    // Append the format parameter to the query string
+    const exportQry = qry ? `${qry}&format=${format}` : `format=${format}`;
+    console.log("Export Query:", exportQry);
 
-  const handlePrint = () => {
-    const qry = handleQuery();
-    console.log("Go and Get Data :", qry);
-    
-    reportPDF(qry)
+    reportPDF(exportQry)
       .then((res) => {
         console.log("Response object:", res);
         if (res.status === 200) {
@@ -88,7 +85,23 @@ const Reports = () => {
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', 'report.pdf');
+          // The file extension is determined by the format selected
+          const ext = format === 'excel' ? 'xlsx' : format === 'csv' ? 'csv' : 'pdf';
+          const now = new Date();
+          const timeOptions = { hour: 'numeric', minute: 'numeric',second:'numeric', hour12: true };
+          let timePart = now.toLocaleTimeString('en-US', timeOptions); // e.g., "2:38 PM"
+          timePart = timePart.replace(' ', ','); // becomes "2:38:PM"
+
+          // Format date as "Mar-3-2025"
+          const dateOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+          let datePart = now.toLocaleDateString('en-US', dateOptions); // e.g., "Mar 3, 2025"
+          datePart = datePart.replace(',', '').replace(/\s+/g, '-'); // becomes "Mar-3-2025"
+
+          let fileName = `report-${timePart}-${datePart}.${ext}`;
+          fileName.replace('_',',')
+          console.log("FileName :", `${fileName}`);
+          
+          link.setAttribute('download', `${fileName}`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -104,6 +117,20 @@ const Reports = () => {
         }
       });
   };
+
+  // Trigger export immediately when export format changes
+  const handleExportFormatChange = (e) => {
+    const newFormat = e.target.value;
+    setExportFormat(newFormat);
+    // Automatically export data on dropdown change
+    handleExport(newFormat);
+  };
+
+  const handleGetStarted = () => {
+    const qry = handleQuery();
+    if (!qry) return;
+  };
+
   const handleClearAll = () => {
     setSearchInput('');
     setSelectedOption('');
@@ -112,43 +139,41 @@ const Reports = () => {
     setQuery(null);
     setCurrentPage(1); // Reset to the first page
   };
+
   function sortGroups(data, sortBy, sorting) {
     let key;
-
     // Determine the key to sort by based on sortBy value
     if (sortBy === 1) {
-        key = 'athlete.pin'; // Sort by pin
+      key = 'athlete.pin'; // Sort by pin
     } else if (sortBy === 2) {
-        key = 'athlete.name'; // Sort by name
+      key = 'athlete.name'; // Sort by name
     } else if (sortBy === 3) {
-        key = 'athlete.groupName'; // Sort by groupName
+      key = 'athlete.groupName'; // Sort by groupName
     } else if (sortBy === 4) {
-        key = 'createdAt'; // Sort by createdAt
+      key = 'createdAt'; // Sort by createdAt
     } else if (sortBy === 5) {
-        key = 'checkinTime'; // Sort by checkinTime
+      key = 'checkinTime'; // Sort by checkinTime
     }
 
     const currentOrder = sorting ? 'asc' : 'desc';
 
     const sortedData = data.sort((a, b) => {
-        const aValue = key.split('.').reduce((obj, keyPart) => obj[keyPart], a);
-        const bValue = key.split('.').reduce((obj, keyPart) => obj[keyPart], b);
+      const aValue = key.split('.').reduce((obj, keyPart) => obj[keyPart], a);
+      const bValue = key.split('.').reduce((obj, keyPart) => obj[keyPart], b);
 
-        if (aValue < bValue) return currentOrder === 'asc' ? -1 : 1;
-        if (aValue > bValue) return currentOrder === 'asc' ? 1 : -1;
-        return 0;
+      if (aValue < bValue) return currentOrder === 'asc' ? -1 : 1;
+      if (aValue > bValue) return currentOrder === 'asc' ? 1 : -1;
+      return 0;
     });
 
     return sortedData;
-}
-  const [sortValue, setSortValue]=useState(1);
-  const [sorting, setSorting]=useState(false);
-  useEffect(()=>{
+  }
+  const [sortValue, setSortValue] = useState(1);
+  const [sorting, setSorting] = useState(false);
+  useEffect(() => {
     console.log("Sort Value Changed :", sortValue);
-    setCheckIn(sortGroups(checkData,sortValue,sorting));
-    // console.log(sortGroups(athletes,sortValue,sorting));
-    
-  },[sortValue,sorting])
+    setCheckIn(sortGroups(checkData, sortValue, sorting));
+  }, [sortValue, sorting]);
 
   return (
     loading === 1 ? (
@@ -160,9 +185,8 @@ const Reports = () => {
         </div>
 
         <div className="mt-3">
-
-        {/* First Row: Search, Filter, Apply Filters */}
-        <div className="row">
+          {/* First Row: Search, Filter, Apply Filters */}
+          <div className="row">
             <div className="col-md-4 col-sm-12 my-2">
               <div className="d-flex align-items-center bg_dede password_fields rounded pe-3">
                 <i className="bi-search mx-3" style={{ cursor: 'pointer' }}></i>
@@ -177,16 +201,7 @@ const Reports = () => {
               </div>
             </div>
             <div className="col-md-4 col-sm-12 my-2">
-              {/* <select
-                className="form-control bg_dede"
-                value={selectedOption}
-                onChange={(e) => setSelectedOption(e.target.value)}
-              >
-                <option value="">Type</option>
-                <option value="pin">ID</option>
-                <option value="athleteName">Name</option>
-                <option value="groupName">Team/Class</option>
-              </select> */}
+              {/* Option select can go here if needed */}
             </div>
             <div className="col-md-1 col-sm-12 my-2" />
             <div className="col-md-3 col-sm-12 my-2">
@@ -208,14 +223,8 @@ const Reports = () => {
                 className="form-control bg_dede"
                 placeholder="Start Date"
                 value={startDate}
-                onFocus={(e) => {
-                  e.target.type = 'date';
-                }}
-                onBlur={(e) => {
-                  if (!e.target.value) {
-                    e.target.type = 'text';
-                  }
-                }}
+                onFocus={(e) => { e.target.type = 'date'; }}
+                onBlur={(e) => { if (!e.target.value) { e.target.type = 'text'; } }}
                 onChange={(e) => setStartDate(e.target.value)}
               />
             </div>
@@ -225,14 +234,8 @@ const Reports = () => {
                 placeholder="End Date"
                 className="form-control bg_dede"
                 value={endDate}
-                onFocus={(e) => {
-                  e.target.type = 'date';
-                }}
-                onBlur={(e) => {
-                  if (!e.target.value) {
-                    e.target.type = 'text';
-                  }
-                }}
+                onFocus={(e) => { e.target.type = 'date'; }}
+                onBlur={(e) => { if (!e.target.value) { e.target.type = 'text'; } }}
                 onChange={(e) => setEndDate(e.target.value)}
               />
             </div>
@@ -246,26 +249,34 @@ const Reports = () => {
                 Reset
               </button>
             </div>
-          </div>        
+          </div>
         </div>
-        {/* <div className="my-4">
-          <h1 className="font-20 poppins-medium my-2">Athlete List</h1>
-        </div> */}
+
+        {/* Export Section: Format dropdown and export button */}
         <div className="row mt-3">
-          <div className="col-md-4 col-sm-12 my-2" />
-          <div className="col-md-4 col-sm-12 my-2" />
-          <div className="col-md-1 col-sm-12 my-2" />
-          <div className="col-md-3 col-sm-12 my-2">
-            <button
-              className="bg_dede bg_dede_btn poppins-medium p-3 px-4 w-100"
-              style={{ borderRadius: '20px', color: '#50514F', fontSize: '16px', border: 'none' }}
-              onClick={handlePrint}
+          <div className="col-md-6 col-sm-12 my-2">
+            <select
+              value={exportFormat}
+              onChange={handleExportFormatChange}
+              className="form-control"
             >
-            <FaFileExport size={25} style={{ paddingRight: '10px' }} />
-              Export Report
+              <option value="pdf">PDF</option>
+              <option value="csv">CSV</option>
+              <option value="excel">Excel</option>
+            </select>
+          </div>
+          <div className="col-md-6 col-sm-12 my-2">
+            <button
+              className="bg_dede bg_dede_btn poppins-medium p-3 px-4 w-100 d-flex align-items-center justify-content-center"
+              style={{ borderRadius: '20px', color: '#50514F', fontSize: '16px', border: 'none' }}
+              onClick={() => handleExport(exportFormat)}
+            >
+              <FaFileExport size={25} style={{ paddingRight: '10px' }} />
+              Export as {exportFormat.toUpperCase()}
             </button>
           </div>
-        </div>        
+        </div>
+
         {checkData.length > 0 ? (
           <div className="my-3">
             <TableView
