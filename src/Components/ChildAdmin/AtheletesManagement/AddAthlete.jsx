@@ -96,6 +96,7 @@ const AddAthlete = () => {
                 email: athlete.email || '',
                 dateOfBirth: formattedDateOfBirth,
                 description: athlete.description || '',
+                message: athlete.message || '',
 
 
             });
@@ -238,6 +239,7 @@ const AddAthlete = () => {
                 athleteGroups: selectedGroups,
                 dateOfBirth: '',
                 description: '',
+                message: '',
                 email: '',
                 name: '',
                 pin: '',
@@ -250,7 +252,7 @@ const AddAthlete = () => {
             });
             
             // Defined input keys
-            const keysToCheck = ['athleteGroups', 'dateOfBirth', 'description', 'email', 'name', 'pin'];
+            const keysToCheck = ['athleteGroups', 'dateOfBirth', 'description','message', 'email', 'name', 'pin'];
 
             // Navigation logic
             // Verify if changes have been made or not
@@ -416,6 +418,21 @@ const AddAthlete = () => {
                         className="form-control p-2 bg_dede"
                         placeholder='Description'
                         {...register('description')}
+                    />
+                </div>
+            </div>
+            <div className="row mb-3">
+                <div className="col-sm-12 tooltip-container">
+                    <label htmlFor="description" className="form-label">
+                        Description
+                    </label>
+                    <span className="tooltip-text-right">Add Custom Message to this athlete record</span>
+                    <input
+                        type="text"
+                        id="message"
+                        className="form-control p-2 bg_dede"
+                        placeholder='Message'
+                        {...register('message')}
                     />
                 </div>
             </div>
