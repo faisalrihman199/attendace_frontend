@@ -11,7 +11,7 @@ const APIProvider = ({ children }) => {
 
   console.log(import.meta.env);
   const server = import.meta.env.VITE_APP_API_URL;
-  
+
   console.log("Server is :", server);
 
 
@@ -189,7 +189,7 @@ const APIProvider = ({ children }) => {
     else if (id) {
       url += `?id=${id}`
     }
-    const response = await axios.get(url,getConfig());
+    const response = await axios.get(url, getConfig());
     return response.data;
   };
   const uploadAthletesCSV = async (data) => {
@@ -199,20 +199,23 @@ const APIProvider = ({ children }) => {
     const response = await axios.post(forAdmin(url), data, getConfig());
     return response.data;
   };
-  const pageWithAdmin = (url, page, qry) => {
+  const pageWithAdmin = (url, page, qry, limit) => {
     url = forAdmin(url);
     if (page) {
-
       url = url.includes('?') ? `${url}&page=${page}` : `${url}?page=${page}`;
     }
     if (qry && !qry.includes('null')) {
       url = url.includes('?') ? `${url}&${qry}` : `${url}?${qry}`;
     }
+    if (limit) {
+      url = url.includes('?') ? `${url}&limit=${limit}` : `${url}?limit=${limit}`;
+    }
     return url;
   };
-  const allStudents = async (page, qry) => {
+
+  const allStudents = async (page, qry, limit) => {
     let url = `${server}/athelete/atheletes`
-    const response = await axios.get(pageWithAdmin(url, page, qry), getConfig());
+    const response = await axios.get(pageWithAdmin(url, page, qry, limit), getConfig());
     return response.data;
   };
   const deleteStudent = async (id) => {
@@ -259,9 +262,9 @@ const APIProvider = ({ children }) => {
     return response.data;
   };
 
-  const businessDashboard = async (period,group) => {
+  const businessDashboard = async (period, group) => {
     let url = `${server}/business/stats`
-    url=forAdmin(url);
+    url = forAdmin(url);
     if (period) {
       url += `${url.includes('?') ? '&' : '?'}period=${period}`;
     }
@@ -286,8 +289,8 @@ const APIProvider = ({ children }) => {
     const response = await axios.get(pageWithAdmin(url, null, qry), getConfig());
     return response.data;
   };
-  const checkIndata = async (page, qry) => {
-    let url = pageWithAdmin(`${server}/athelete/getAttendence`, page)
+  const checkIndata = async (page, qry,limit) => {
+    let url = pageWithAdmin(`${server}/athelete/getAttendence`, page,null,limit)
     if (qry) {
       url += `&${qry}`
     }
@@ -321,9 +324,9 @@ const APIProvider = ({ children }) => {
   const provider = {
     login, signup, sendOtp, verifyForgotOTP, resetPassword,//auth
     userProfile, createUser, contact, updateProfile,   //user
-    allBussineses, deleteBussiness, updateBussinessStatus,updateTrialPaid, addBussiness, getBussiness, businessDashboard, allTemplates, saveTemplete,          //bussinesses
+    allBussineses, deleteBussiness, updateBussinessStatus, updateTrialPaid, addBussiness, getBussiness, businessDashboard, allTemplates, saveTemplete,          //bussinesses
     addTeam, allTeams, generatePin, allGroups, deleteGroup, checkPin,                         //Team/Class
-    addStudent,resendWelcomeEmail,oneAthlete, allStudents, deleteStudent, checkIn, checkIndata, uploadAthletesCSV,                                         //Athelete
+    addStudent, resendWelcomeEmail, oneAthlete, allStudents, deleteStudent, checkIn, checkIndata, uploadAthletesCSV,                                         //Athelete
     getReporting, updateReporting, billingDashboard, paymentHistory, reportPDF, changePLan,                      //Reporting
     getConfig,
     verifyOtp

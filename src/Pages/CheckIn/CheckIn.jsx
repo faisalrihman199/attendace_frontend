@@ -16,6 +16,7 @@ const CheckIn = () => {
     const { name } = useParams();
     const businessId = name?.split('@')[name?.split('@').length - 1];
     const [athleteName, setAthlete] = useState(null);
+    const [athleteMessage, setMessage] = useState(null);
     const [pic, setPic] = useState(person);
     const [scanResult, setScanResult] = useState(null);
     const [manualSerialNumber, setManualSerialNumber] = useState('');
@@ -125,6 +126,7 @@ const CheckIn = () => {
                 if (res.success) {
                     toast.success(res.message);
                     setAthlete(res.data.athleteName);
+                    setMessage(res.data.athleteMessage);
                     if (res.data.photoPath) {
                         setPic(`${server.split('/api')[0]}${res.data.photoPath}`)
                     }
@@ -177,6 +179,12 @@ const CheckIn = () => {
                                             <img src={pic} className='rounded-circle' alt="" height={144} width={144} />
                                         </div>
                                     </div>
+                                    {
+                                        athleteMessage && 
+                                        <div className='text-danger text-center' > <p className='poppins-thin' style={{ fontSize: '28px' }}>
+                                        <i className='fw-bold' >{athleteName.toUpperCase()}</i> 
+                                    </p> </div>
+                                    }
                                 </div>
                             </div>
                             :

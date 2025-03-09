@@ -242,3 +242,17 @@ a{
   width: 120% !important;
   margin-left: 20% !important;
 }
+/* Remove any borders, background and force text color to black for non-active links */
+.custom-page-link {
+  color: #000000DE !important;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+/* Active page styles with rounded border (50% makes it circular) */
+.page-link.active {
+  border-radius: 50%;
+  /* Optionally, you can also set a background or text color for active state here */
+}

@@ -15,10 +15,13 @@ const AthleteManagement = ({ query }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [change, setChange] = useState(false);
-    const [totalAthletes,setTotal]=useState(0)
-
-    // Separate loading states:
-    // dataLoading for API fetch; emailLoadingId for tracking email resend per athlete.
+    const [totalAthletes, setTotal] = useState(0)
+    const [perPage, setPerPage] = useState(10);
+    const handlePerPageChange = (event) => {
+        const newPerPage = parseInt(event.target.value, 10);
+        setPerPage(newPerPage);
+        setCurrentPage(1);
+    };
     const [dataLoading, setDataLoading] = useState(true);
     const [emailLoadingId, setEmailLoadingId] = useState(null);
 
@@ -53,7 +56,7 @@ const AthleteManagement = ({ query }) => {
 
     useEffect(() => {
         setDataLoading(true);
-        allStudents(currentPage, query)
+        allStudents(currentPage, query, perPage)
             .then((res) => {
                 console.log("All Students:", res.data);
                 setAthletes(res?.data?.athletes);
@@ -67,7 +70,7 @@ const AthleteManagement = ({ query }) => {
             .finally(() => {
                 setDataLoading(false);
             });
-    }, [currentPage, change, query]);
+    }, [currentPage, change, query, perPage]);
 
     const handleDelete = (id) => {
         confirmAlert({
@@ -135,7 +138,7 @@ const AthleteManagement = ({ query }) => {
                 {athletes.length > 0 ? (
                     <TableView
                         headNames={headNames}
-                        
+
                         setSortValue={setSortValue}
                         setSorting={setSorting}
                         rows={athletes.map((athlete) => ({
@@ -183,14 +186,42 @@ const AthleteManagement = ({ query }) => {
                 ) : (
                     <div className='text-danger ms-3'>No Active Athlete Found</div>
                 )}
-                <div className="my-5 d-flex flex-grow align-items-center justify-content-between mx-4">
-                    <div >
-                        Total Athletes {totalAthletes}
-                    </div>
-                    <div>
-                        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
-                    </div>
-                </div>
+                <div className="my-5 d-flex flex-column flex-lg-row justify-content-between align-items-center mx-4">
+  {/* Line 1 / Left Side: Showing [dropdown] per page */}
+  <div className="d-flex align-items-center mb-3 mb-lg-0">
+    <span className="me-2 fw-medium">Showing</span>
+    <select
+      className="form-select w-auto"
+      onChange={handlePerPageChange}
+      value={perPage}
+    >
+      <option value="10">10</option>
+      <option value="20">20</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+    </select>
+    <span className="ms-2 fw-medium">per page</span>
+  </div>
+  
+  {/* Right Side: Contains Pagination and Athletes count */}
+  <div className="d-flex flex-column flex-lg-row align-items-center">
+    {/* Line 2 on tablet/mobile: Pagination */}
+    <div className="mb-3 mb-lg-0">
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+    </div>
+    {/* Line 3 on tablet/mobile: Current Athletes count */}
+    <div className="ms-lg-3">
+      <span className="fw-medium">
+        {Math.min(perPage * currentPage, totalAthletes)} of {totalAthletes} Athletes
+      </span>
+    </div>
+  </div>
+</div>
+
+
+
+
+
             </div>
     );
 };

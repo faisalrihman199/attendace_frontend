@@ -21,7 +21,12 @@ const Reports = () => {
 
   // New state to handle export format
   const [exportFormat, setExportFormat] = useState('pdf');
-
+  const [perPage, setPerPage] = useState(10);
+    const handlePerPageChange = (event) => {
+        const newPerPage = parseInt(event.target.value, 10);
+        setPerPage(newPerPage);
+        setCurrentPage(1);
+    };
   const headNames = [
     'Athlete ID',
     'Athlete Name',
@@ -33,15 +38,16 @@ const Reports = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
+  const [totalItems, setTotalItems]=useState(0);
   useEffect(() => {
     setLoading(1);
-    checkIndata(currentPage, query)
+    checkIndata(currentPage, query,perPage)
       .then((res) => {
         console.log("Response :", res);
         setCheckIn(res.data);
         setCurrentPage(res.currentPage);
         setTotalPages(res.totalPages);
+        setTotalItems(res?.totalCheckins)
       })
       .catch((err) => {
         console.log("Error :", err);
@@ -49,7 +55,7 @@ const Reports = () => {
       .finally(() => {
         setLoading(0);
       });
-  }, [currentPage, query]);
+  }, [currentPage, query,perPage]);
 
   const handleQuery = () => {
     const qryParts = [];
@@ -295,9 +301,26 @@ const Reports = () => {
         ) : (
           <div className="ms-3 text-danger">No Records Found</div>
         )}
-        <div className="my-4">
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
-        </div>
+        <div className="my-5 d-flex flex-column flex-md-row justify-content-between align-items-center mx-4">
+                    {/* Left Side: Showing [dropdown] per page */}
+                    <div className="d-flex align-items-center mb-3 mb-md-0">
+                        <span className="me-2 fw-medium">Showing</span>
+                        <select className="form-select w-auto" onChange={handlePerPageChange} value={perPage}>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span className="ms-2 fw-medium">per page</span>
+                    </div>
+                    {/* Right Side: Pagination and current display info */}
+                    <div className="d-flex flex-column flex-md-row align-items-center">
+                        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+                        <span className="mt-2 mt-md-0 ms-md-3 fw-medium">
+                            {Math.min(perPage * currentPage, totalItems)} of {totalItems} items
+                        </span>
+                    </div>
+                </div>
       </div>
     )
   );
