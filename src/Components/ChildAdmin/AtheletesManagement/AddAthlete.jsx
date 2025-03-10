@@ -424,7 +424,7 @@ const AddAthlete = () => {
             <div className="row mb-3">
                 <div className="col-sm-12 tooltip-container">
                     <label htmlFor="description" className="form-label">
-                        Description
+                        Custom Message
                     </label>
                     <span className="tooltip-text-right">Add Custom Message to this athlete record</span>
                     <input
