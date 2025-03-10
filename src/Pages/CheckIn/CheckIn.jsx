@@ -182,7 +182,7 @@ const CheckIn = () => {
                                     {
                                         athleteMessage && 
                                         <div className='text-danger text-center' > <p className='poppins-thin' style={{ fontSize: '28px' }}>
-                                        <i className='fw-bold' >{athleteName.toUpperCase()}</i> 
+                                        <i className='fw-bold' >{athleteMessage?.toUpperCase()}</i> 
                                     </p> </div>
                                     }
                                 </div>

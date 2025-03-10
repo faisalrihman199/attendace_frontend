@@ -51,6 +51,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
               <button
                 onClick={() => handlePageClick(1)}
                 className="page-link custom-page-link"
+                
               >
                 &laquo;
               </button>
