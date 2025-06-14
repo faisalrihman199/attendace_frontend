@@ -6,6 +6,7 @@ import { useAPI } from '../../../contexts/Apicontext'
 import Loading from "../../../Components/Loading"
 import { AiOutlineTeam, AiOutlineUser } from 'react-icons/ai'
 import { useNavigate } from 'react-router-dom';
+import GroupAttendanceCard from './GroupAttendanceCard';
 
 const Dashboard = () => {
     const { businessDashboard } = useAPI();
@@ -27,7 +28,7 @@ const Dashboard = () => {
         const encrypted = `RG${number}W${number + 2}`;
         return encrypted;
     }
-    
+
     function sortMonth(month, groupData) {
         // Define the mapping of month names to their index
         const monthMap = {
@@ -46,7 +47,7 @@ const Dashboard = () => {
         };
         // Get the index of the provided month
         const monthIndex = monthMap[month];
-    
+
         // Create the result array with the group name and login value for the specified month
         const result = groupData.map(group => {
             const loginValue = group.monthlyLogins[monthIndex][month]; // Get login value for the given month
@@ -55,14 +56,15 @@ const Dashboard = () => {
                 value: loginValue
             };
         });
-    
+
         return result;
     }
-    
-    
-    const [option, setOption] = useState('year');
+
+
+    const [option, setOption] = useState('daily');
     const [group, setGroup] = useState('team');
-    const [originalData, setOriginalData]=useState([]);
+    const [originalData, setOriginalData] = useState([]);
+    const [groupNames, setGroupNames] = useState(null);
     const months = [
         { short: "Jan", full: "January" },
         { short: "Feb", full: "February" },
@@ -78,10 +80,10 @@ const Dashboard = () => {
         { short: "Dec", full: "December" },
     ]
     const currentMonth = months[new Date().getMonth()];
-    const [month,setMonth]=useState(currentMonth?.short || 'Feb');
-    useEffect(()=>{
-        setData(sortMonth(month,originalData));
-    },[month]);
+    const [month, setMonth] = useState(currentMonth?.short || 'Feb');
+    useEffect(() => {
+        setData(sortMonth(month, originalData));
+    }, [month]);
     function sortDaily(day, data) {
         return data.map(group => {
             const value = group.dailyLogins.find(entry => Object.keys(entry)[0] === day)?.[day] || 0;
@@ -91,77 +93,88 @@ const Dashboard = () => {
     const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const today = new Date().getDay();
     console.log("Today is :", weekdays[today]);
-    
-    
-    const [currentDay,setCurrentDay]=useState(weekdays[today || 0]);
+
+
+    const [currentDay, setCurrentDay] = useState(weekdays[today || 0]);
     function sortWeek(weekRange, groupData) {
         // Create the result array
         const result = groupData.map(group => {
             // Find the weekly login value for the given week range
             const weekLogin = group.weeklyLogins.find(week => Object.keys(week)[0] === weekRange);
             const value = weekLogin ? Object.values(weekLogin)[0] : 0;
-            
+
             return {
                 name: group.groupName,
                 value: value
             };
         });
-        
+
         return result;
     }
     function getAllWeekRanges(groupData) {
         // Collect all week ranges from the weeklyLogins of each group
         const weekRanges = groupData.flatMap(group => group.weeklyLogins.map(week => Object.keys(week)[0]));
-        
+
         // Remove duplicates (if any)
         return [...new Set(weekRanges)];
     }
-    const [currentWeek, setCurrentWeek]=useState(null)
-    const [weeks,setWeeks]=useState([])
+    const [currentWeek, setCurrentWeek] = useState(null)
+    const [groupBasedData, setGroupBasedData] = useState([])
+    const [weeks, setWeeks] = useState([])
+    const [selectedGroup, setSelectedGroup] = useState({})
     useEffect(() => {
-            setLoading(true);
-            
-            businessDashboard(option,group)
-                .then((res) => {
-                    console.log("Response Data  for Business is :", res.data);
-                    setStudents(res.data.totalAthletes);
-                    setGroups(res.data.totalAthleteGroups);
-                    if (res?.data?.groupData) {
-                        console.log("Data to be process is :", res.data.groupData);
-                        setOriginalData(res?.data?.groupData);
-                        option==='year' && setData(res?.data?.groupData)
-                        option==='monthly' && setData(sortMonth(month,res?.data?.groupData))
-                        option==='daily' && setData(sortDaily(currentDay,res?.data?.groupData))
-                        if (option==='weekly'){
-                            const weekRanges = getAllWeekRanges(res?.data?.groupData);
-                            console.log("Data for week is :", res.data.groupData);
-                            
-                            setWeeks(weekRanges);
-                            weekRanges.length>3 && setCurrentWeek(weekRanges[3])
-                            weekRanges.length>3 && setData(sortWeek(weekRanges[3],res?.data?.groupData))
-                        } 
+        setLoading(true);
+
+        businessDashboard(option, group, selectedGroup?.id)
+            .then((res) => {
+                console.log("Response Data  for Business is :", res.data);
+                setStudents(res.data.totalAthletes);
+                setGroups(res.data.totalAthleteGroups);
+                if (res?.data?.groupData) {
+                    console.log("Data to be process is :", res.data.groupData);
+                    setOriginalData(res?.data?.groupData);
+                    option === 'year' && setData(res?.data?.groupData)
+                    option === 'monthly' && setData(sortMonth(month, res?.data?.groupData))
+                    option === 'daily' && setData(sortDaily(currentDay, res?.data?.groupData))
+                    if (option === 'weekly') {
+                        const weekRanges = getAllWeekRanges(res?.data?.groupData);
+                        console.log("Data for week is :", res.data.groupData);
+
+                        setWeeks(weekRanges);
+                        weekRanges.length > 3 && setCurrentWeek(weekRanges[3])
+                        weekRanges.length > 3 && setData(sortWeek(weekRanges[3], res?.data?.groupData))
                     }
-                    setLogins(res.data.last3Logins);
-                    setBusiness(res.data.businessName);
-                    setBusinessId(encryptBusinessId(res.data.businessId));
-                })
-                .catch((err) => {
-                    console.log("Error :", err);
-                })
-                .finally(() => {
-                    setLoading(false);
-                })
-        
+                }
+                setGroupNames(res.data.groupData);
 
-    }, [option,group])
-    useEffect(()=>{
-        setData(sortWeek(currentWeek,originalData));
-    },[currentWeek])
-    useEffect(()=>{
-        setData(sortDaily(currentDay,originalData));
-    },[currentDay])
+                const selectedExists = res.data.groupData.some(group => group.id === selectedGroup?.id);
 
-   
+                if (!selectedExists && res.data.groupData.length > 0) {
+                    setSelectedGroup(res.data.groupData[0]);
+                }
+                setLogins(res.data.last3Logins);
+                setBusiness(res.data.businessName);
+                setBusinessId(encryptBusinessId(res.data.businessId));
+                setGroupBasedData(res.data.newData)
+
+            })
+            .catch((err) => {
+                console.log("Error :", err);
+            })
+            .finally(() => {
+                setLoading(false);
+            })
+
+
+    }, [option, group, selectedGroup])
+    useEffect(() => {
+        setData(sortWeek(currentWeek, originalData));
+    }, [currentWeek])
+    useEffect(() => {
+        setData(sortDaily(currentDay, originalData));
+    }, [currentDay])
+
+
     return (
         loading ?
             <Loading />
@@ -263,14 +276,45 @@ const Dashboard = () => {
                             <option value="class">Classes</option>
                         </select>
                     </div>
-                    
+                    {
+                        groupNames &&
+                        <div className="col-md-3 col-sm-12 my-2">
+                            <select
+                                className="form-control bg_dede"
+                                value={selectedGroup?.id || ''}
+                                onChange={(e) => {
+                                    const selectedId = parseInt(e.target.value, 10); // Convert to number
+
+                                    const selected = groupNames.find(g => g.id === selectedId);
+                                    console.log("Selected Group is:", selected);
+
+                                    if (selected) {
+                                        setSelectedGroup(selected);
+                                    }
+                                }}
+                            >
+                                <option value="">Select a Group</option>
+                                {groupNames.map((group) => (
+                                    <option key={group.id} value={group.id}>
+                                        {group.groupName || group.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    }
+
+
                 </div>
                 <div className="my-3" >
-                    {chartData &&
+                    {/* {chartData &&
                         <BasicLineChart rawData={chartData} />
 
-                    }
+                    } */}
                 </div>
+                {
+                    groupBasedData.length > 0 &&
+                    <GroupAttendanceCard group={groupBasedData[0]} />
+                }
             </div>
     )
 }

@@ -28,7 +28,7 @@ const CheckIn = () => {
     const [startLoading, setStart] = useState(false);
     const secretKey = import.meta.env.VITE_APP_SECRET_KEY;
 
-    
+
 
     useEffect(() => {
         if (showScanner) {
@@ -75,7 +75,7 @@ const CheckIn = () => {
                     setBusiness(res.data)
 
                     server = server.replace('/api', '');
-                    if(res.data.photo){
+                    if (res.data.photo) {
 
                         setPhoto(`${server}/${res.data.photo}`);
                     }
@@ -91,22 +91,22 @@ const CheckIn = () => {
 
     function decryptBusinessId(encrypted) {
         if (!encrypted.startsWith('RG') || !encrypted.includes('W')) {
-          throw new Error("Invalid encrypted format.");
+            throw new Error("Invalid encrypted format.");
         }
-      
+
         // Extract the number part from the encrypted string
         const numberPart = encrypted.slice(2, encrypted.indexOf('W'));
         const encryptedNum = parseInt(numberPart, 10);
         const plusTwo = parseInt(encrypted.slice(encrypted.indexOf('W') + 1), 10);
-      
+
         // Perform the decryption: Subtract 2 from the number
         if (isNaN(encryptedNum) || isNaN(plusTwo)) throw new Error("Invalid encrypted data.");
-      
+
         const decrypted = plusTwo - 2;
-      
+
         return decrypted;
-      }
-      
+    }
+
     const handleCheckIn = (pin) => {
         if (!getValues('pin') && !pin) {
             toast.error("Please Enter PIN or Scan QR Code");
@@ -180,10 +180,10 @@ const CheckIn = () => {
                                         </div>
                                     </div>
                                     {
-                                        athleteMessage && 
+                                        athleteMessage &&
                                         <div className='text-danger text-center' > <p className='poppins-thin' style={{ fontSize: '28px' }}>
-                                        <i className='fw-bold' >{athleteMessage?.toUpperCase()}</i> 
-                                    </p> </div>
+                                            <i className='fw-bold' >{athleteMessage?.toUpperCase()}</i>
+                                        </p> </div>
                                     }
                                 </div>
                             </div>
@@ -196,11 +196,16 @@ const CheckIn = () => {
                                     <p className='poppins-regular font-20 mb-2 ms-1'>Enter PIN to Check-In</p>
                                     <input
                                         type="number"
-                                        inputMode="numeric" 
+                                        inputMode="numeric"
                                         pattern="[0-9]*"
                                         className="form-control p-2 bg_dede mb-2"
                                         placeholder="PIN"
                                         autoComplete="new-password"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                handleCheckIn();
+                                            }
+                                        }}
                                         {...register('pin')}
                                     />
 

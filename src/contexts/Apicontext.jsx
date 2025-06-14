@@ -148,6 +148,22 @@ const APIProvider = ({ children }) => {
     const response = await axios.post(url, data, getConfig());
     return response.data;
   };
+
+  const addSchedule=async(data)=>{
+      let url = `${server}/schedule/save`
+      const response = await axios.post(url,data, getConfig());
+    return response.data;
+  }
+  const getSchedules=async(id)=>{
+      let url = `${server}/schedule?groupId=${id}`
+      const response = await axios.get(url, getConfig());
+    return response.data;
+  }
+  const deleteSchedule=async(id)=>{
+      let url = `${server}/schedule?scheduleId=${id}`
+      const response = await axios.delete(url, getConfig());
+    return response.data;
+  }
   const allTeams = async () => {
     let url = `${server}/business/getAtheleteGroups`
     const response = await axios.get(forAdmin(url), getConfig());
@@ -262,7 +278,7 @@ const APIProvider = ({ children }) => {
     return response.data;
   };
 
-  const businessDashboard = async (period, group) => {
+  const businessDashboard = async (period, group, groupId) => {
     let url = `${server}/business/stats`
     url = forAdmin(url);
     if (period) {
@@ -271,12 +287,19 @@ const APIProvider = ({ children }) => {
     if (group) {
       url += `${url.includes('?') ? '&' : '?'}group=${group}`;
     }
+    if (groupId) {
+      url += `${url.includes('?') ? '&' : '?'}groupId=${groupId}`;
+    }
     const response = await axios.get(url, getConfig());
     return response.data;
   };
   const billingDashboard = async () => {
     let url = `${server}/user/getCards`
     const response = await axios.get(forAdmin(url), getConfig());
+    return response.data;
+  };
+  const cancelSubscriptionRequest = async (id,request) => {
+    const response = await axios.get(`${server}/business/cancel?id=${id}&request=${request}`, getConfig());
     return response.data;
   };
   const paymentHistory = async (page) => {
@@ -324,8 +347,8 @@ const APIProvider = ({ children }) => {
   const provider = {
     login, signup, sendOtp, verifyForgotOTP, resetPassword,//auth
     userProfile, createUser, contact, updateProfile,   //user
-    allBussineses, deleteBussiness, updateBussinessStatus, updateTrialPaid, addBussiness, getBussiness, businessDashboard, allTemplates, saveTemplete,          //bussinesses
-    addTeam, allTeams, generatePin, allGroups, deleteGroup, checkPin,                         //Team/Class
+    allBussineses, deleteBussiness, updateBussinessStatus, updateTrialPaid, addBussiness, getBussiness, businessDashboard, allTemplates, saveTemplete, cancelSubscriptionRequest,         //bussinesses
+    addTeam,getSchedules,deleteSchedule,addSchedule, allTeams, generatePin, allGroups, deleteGroup, checkPin,                         //Team/Class
     addStudent, resendWelcomeEmail, oneAthlete, allStudents, deleteStudent, checkIn, checkIndata, uploadAthletesCSV,                                         //Athelete
     getReporting, updateReporting, billingDashboard, paymentHistory, reportPDF, changePLan,                      //Reporting
     getConfig,
