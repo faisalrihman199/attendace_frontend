@@ -19,7 +19,7 @@ const Billing = () => {
   const [isCancelling, setIsCancelling] = useState(false);
   const [sortValue, setSortValue] = useState(1);
   const [sorting, setSorting] = useState(false);
-  const [cancelRequested,setCancelRequested]=useState(false);
+  const [cancelRequested, setCancelRequested] = useState(false);
 
   const handlePageChange = (page) => setCurrentPage(page);
 
@@ -30,7 +30,7 @@ const Billing = () => {
         setPlan(res.data.plan);
         setCard(res.data.cards);
         setCancelRequested(res.data.cancelRequested)
-        
+
       })
       .catch((err) => console.error("Dashboard Error:", err))
       .finally(() => setLoading(0));
@@ -112,9 +112,9 @@ const Billing = () => {
         {
           label: 'Yes',
           onClick: () => {
-            const currentBusiness=sessionStorage.getItem("currentBussiness")
+            const currentBusiness = sessionStorage.getItem("currentBussiness")
             setIsCancelling(true);
-            cancelSubscriptionRequest(currentBusiness,!cancelRequested)
+            cancelSubscriptionRequest(currentBusiness, !cancelRequested)
               .then(res => {
                 toast.success(res.message || "Subscription status updated.");
                 setChange(prev => !prev);
@@ -150,17 +150,25 @@ const Billing = () => {
                 Cancel Subscription
               </label>
               <div className="form-check form-switch">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="cancelToggle"
-                  checked={cancelRequested}
-                  onChange={(e) => {
+                {isCancelling ?
+                  <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  :
+
+                  <input
+                    className="form-check-input cursor-pointer"
+                    type="checkbox"
+                    id="cancelToggle"
+                    checked={cancelRequested}
+                    onChange={(e) => {
                       handleCancelSubscription();
-                    
-                  }}
-                  disabled={isCancelling}
-                />
+
+                    }}
+                    disabled={isCancelling}
+                  />
+                }
+
               </div>
             </div>
           </div>

@@ -11,7 +11,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 const BusinessCard = ({ business, setChange }) => {
     const [emailToggled, setEmailToggle] = useState(business?.status === 'active');
     const [paidToggled, setPaidToggled] = useState(business?.trialPaid);
-    const { deleteBussiness, updateBussinessStatus, updateTrialPaid } = useAPI();
+    const { deleteBussiness, updateBussinessStatus, updateTrialPaid,cancelSubscriptionRequest } = useAPI();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(0);
 
@@ -99,10 +99,38 @@ const BusinessCard = ({ business, setChange }) => {
                 setLoading(0);
             });
     };
-
+    const [isCancelling,setIsCancelling]=useState(false);
+     const handleCancelSubscription = () => {
+        confirmAlert({
+          title: 'Cancel Subscription',
+          message: 'Are you sure you want to reject subscription status?',
+          buttons: [
+            {
+              label: 'Yes',
+              onClick: () => {
+                const currentBusiness = sessionStorage.getItem("currentBussiness")
+                setIsCancelling(true);
+                cancelSubscriptionRequest(currentBusiness, false)
+                  .then(res => {
+                    toast.success(res.message || "Subscription status updated.");
+                    window.location.reload();
+                  })
+                  .catch(() => toast.error("Failed to update subscription."))
+                  .finally(() => setIsCancelling(false));
+              }
+            },
+            {
+              label: 'No',
+              onClick: () => {
+                const toggle = document.getElementById('cancelToggle');
+                if (toggle) toggle.checked = true;
+              }
+            }
+          ]
+        });
+      };
     const handleCancelReject = () => {
-        toast.info("Cancel request not approved");
-        // Optional: call an API here to mark cancelRequested as false if needed
+        handleCancelSubscription();
     };
 
     return (
