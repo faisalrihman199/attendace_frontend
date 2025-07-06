@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { BsXCircleFill } from 'react-icons/bs';
 import { FaFileExport } from 'react-icons/fa';
 import { PiCheckCircle } from 'react-icons/pi';
+import { BiSolidDownArrow } from 'react-icons/bi';
 
 const GroupAttendanceCard = ({ group }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
 
   const exportToPDF = () => {
     const { jsPDF } = window.jspdf;
@@ -57,10 +59,27 @@ const GroupAttendanceCard = ({ group }) => {
       }))
   );
 
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedRecords = [...filteredRecords].sort((a, b) => {
+    const aVal = a[sortConfig.key]?.toString().toLowerCase?.() || '';
+    const bVal = b[sortConfig.key]?.toString().toLowerCase?.() || '';
+
+    if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+
   return (
     <div className="container my-4 p-4 border shadow-sm bg-white rounded">
       <div className="row">
-        {/* Group Info + Progress */}
+        {/* Group Info */}
         <div className="col-md-4">
           <h5 className="top_heading poppins-medium color_bao">{group.groupName}</h5>
 
@@ -99,13 +118,16 @@ const GroupAttendanceCard = ({ group }) => {
           </div>
 
           <div className="mt-3">
-            <button className="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center" onClick={exportToPDF}>
+            <button
+              className="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center"
+              onClick={exportToPDF}
+            >
               <FaFileExport size={20} className="me-2" /> Export as PDF
             </button>
           </div>
         </div>
 
-        {/* Athlete Attendance + Search */}
+        {/* Records Table */}
         <div className="col-md-8">
           <input
             type="text"
@@ -119,15 +141,48 @@ const GroupAttendanceCard = ({ group }) => {
             <table className="table table-bordered align-middle">
               <thead className="table-light sticky-top">
                 <tr>
-                  <th>Athlete</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Time Logged</th>
+                  {['athleteName', 'date', 'status', 'checkInTime'].map((key, i) => {
+                    const labelMap = {
+                      athleteName: 'Athlete',
+                      date: 'Date',
+                      status: 'Status',
+                      checkInTime: 'Time Logged',
+                    };
+                    const isActive = sortConfig.key === key;
+                    return (
+                      <th
+                        key={i}
+                        style={{ cursor: 'pointer', verticalAlign: 'middle' }}
+                        onClick={() => handleSort(key)}
+                      >
+                        <div className="d-flex align-items-center gap-1">
+                          {labelMap[key]}
+                          <span className="d-flex flex-column ms-1" style={{ lineHeight: 0 }}>
+                            <BiSolidDownArrow
+                              size={10}
+                              style={{
+                                transform: 'rotate(180deg)',
+                                color: isActive && sortConfig.direction === 'asc' ? '#000' : '#ccc',
+                              }}
+                            />
+                            <BiSolidDownArrow
+                              size={10}
+                              style={{
+                                transform: 'rotate(0deg)',
+                                color: isActive && sortConfig.direction === 'desc' ? '#000' : '#ccc',
+                              }}
+                            />
+                          </span>
+                        </div>
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
+
               <tbody>
-                {filteredRecords.length > 0 ? (
-                  filteredRecords.map((rec) => (
+                {sortedRecords.length > 0 ? (
+                  sortedRecords.map((rec) => (
                     <tr key={rec.key}>
                       <td className="fw-bold text-dark">{rec.athleteName}</td>
                       <td>{rec.date} ({rec.day})</td>
@@ -164,7 +219,9 @@ const GroupAttendanceCard = ({ group }) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="text-center text-muted">No records match your search</td>
+                    <td colSpan="4" className="text-center text-muted">
+                      No records match your search
+                    </td>
                   </tr>
                 )}
               </tbody>
