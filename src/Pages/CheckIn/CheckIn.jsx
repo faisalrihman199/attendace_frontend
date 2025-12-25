@@ -83,7 +83,7 @@ const CheckIn = () => {
                     console.log("Response is :", res);
                     setBusiness(res.data)
 
-                    server = server.replace('/api', '');
+                    server = server.replace('/api', '/api/resources');
                     if (res.data.photo) {
 
                         setPhoto(`${server}/${res.data.photo}`);

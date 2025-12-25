@@ -22,7 +22,7 @@ const Profile = () => {
             console.log("Response is :", res);
             setProfile(res.data);
             setName(`${res.data.firstName} ${res.data.lastName}`)
-            server = server.replace('/api', '');
+            server = server.replace('/api', '/api/resources');
             if(res.data.businessPhoto){
 
                 setPhoto(`${server}${res.data.businessPhoto}`)

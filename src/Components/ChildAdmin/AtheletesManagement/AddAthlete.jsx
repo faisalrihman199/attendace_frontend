@@ -79,7 +79,7 @@ const AddAthlete = () => {
 
   useEffect(() => {
     if (athlete) {
-      server = server.replace('/api', '');
+      server = server.replace('/api', '/api/resources');
       const formattedDateOfBirth = athlete.dateOfBirth
         ? new Date(athlete.dateOfBirth).toLocaleDateString('en-GB')
         : '';

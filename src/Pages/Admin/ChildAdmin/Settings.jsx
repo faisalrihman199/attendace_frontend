@@ -46,7 +46,7 @@ const Settings = () => {
                 setValue('timezone', res.data[0].timezone); // Set existing time zone value
                 setValue('waiverText', res.data[0].waiverText || '');
                 setWaiverToggle(res.data[0].waiverActive || false);
-                server = server.replace('/api', '');
+                server = server.replace('/api', '/api/resources');
                 setImageSrc(`${server}/${res.data[0].photoPath}`);
             })
             .catch((err) => {
