@@ -12,6 +12,7 @@ import Setting from "./Icons/Setting";
 import Help from "./Icons/Help";
 import Profile from "./Icons/Profile";
 import Logout from "./Icons/Logout";
+import { BsChatDots } from 'react-icons/bs';
 import { AiOutlineTeam, AiOutlineUser } from "react-icons/ai";
 
 const Sidebar = () => {
@@ -174,6 +175,12 @@ const Sidebar = () => {
             <Link to="/admin/help" className={`sidebar-link d-flex mx-2 ${isActive('help') ? 'active_link' : ''}`}>
               <div><Help /></div>
               <span className="mx-2 mt-1">Help</span>
+            </Link>
+          </li>
+          <li className="sidebar-item my-2">
+            <Link to="/chat" className={`sidebar-link d-flex mx-2 ${isActive('chat') ? 'active_link' : ''}`}>
+              <div><BsChatDots size={20} /></div>
+              <span className="mx-2 mt-1">Chat</span>
             </Link>
           </li>
           {/* <li className="sidebar-item my-2">

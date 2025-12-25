@@ -12,6 +12,15 @@ import CryptoJS from "crypto-js";
 
 const CheckIn = () => {
     const [checked, setChecked] = useState(false);
+    const [showWaiverModal, setShowWaiverModal] = useState(false);
+    const [waiverFormData, setWaiverFormData] = useState({
+        athleteName: '',
+        parentGuardianName: '',
+        email: '',
+        phone: '',
+        agreeToTerms: false
+    });
+    const [submittingWaiver, setSubmittingWaiver] = useState(false);
     const { register, setValue, formState: { errors }, getValues } = useForm();
     const { name } = useParams();
     const businessId = name?.split('@')[name?.split('@').length - 1];
@@ -148,6 +157,61 @@ const CheckIn = () => {
     };
 
 
+    const handleWaiverSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!waiverFormData.athleteName || !waiverFormData.parentGuardianName || 
+            !waiverFormData.email || !waiverFormData.phone || !waiverFormData.agreeToTerms) {
+            toast.error("Please fill all fields and agree to the terms");
+            return;
+        }
+
+        setSubmittingWaiver(true);
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/business/submitWaiver`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    businessId: decryptBusinessId(businessId),
+                    ...waiverFormData
+                }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                toast.success("Waiver submitted successfully! Confirmation emails have been sent.");
+                setShowWaiverModal(false);
+                setWaiverFormData({
+                    athleteName: '',
+                    parentGuardianName: '',
+                    email: '',
+                    phone: '',
+                    agreeToTerms: false
+                });
+            } else {
+                toast.error(result.message || "Failed to submit waiver");
+            }
+        } catch (error) {
+            console.error("Error submitting waiver:", error);
+            toast.error("An error occurred while submitting the waiver");
+        } finally {
+            setSubmittingWaiver(false);
+        }
+    };
+
+    const handleWaiverInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setWaiverFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+
     return (
 
         startLoading ?
@@ -232,6 +296,20 @@ const CheckIn = () => {
                                         </button>
                                     </div>
                                 </div>
+
+                                {business?.waiverActive && (
+                                    <div className="my-4">
+                                        <div className="d-flex justify-content-center">
+                                            <button 
+                                                className="btn btns" 
+                                                
+                                                onClick={() => setShowWaiverModal(true)}
+                                            >
+                                                Liability Waiver
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                     }
                 </div>
@@ -259,6 +337,138 @@ const CheckIn = () => {
                                         Close
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Modal for Liability Waiver */}
+                {showWaiverModal && (
+                    <div className="modal show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                        <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
+                            <div className="modal-content">
+                                <div className="modal-header" style={{ backgroundColor: '#247BA0', color: 'white' }}>
+                                    <h5 className="modal-title poppins-medium">Liability Waiver Form</h5>
+                                    <button 
+                                        type="button" 
+                                        className="btn-close btn-close-white" 
+                                        aria-label="Close" 
+                                        onClick={() => setShowWaiverModal(false)}
+                                    ></button>
+                                </div>
+                                <form onSubmit={handleWaiverSubmit}>
+                                    <div className="modal-body poppins-regular">
+                                        <div className="mb-3">
+                                            <label htmlFor="athleteName" className="form-label">
+                                                Athlete Name <span className="text-danger">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="athleteName"
+                                                name="athleteName"
+                                                value={waiverFormData.athleteName}
+                                                onChange={handleWaiverInputChange}
+                                                placeholder="Enter athlete name"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <label htmlFor="parentGuardianName" className="form-label">
+                                                Parent/Guardian Name <span className="text-danger">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="parentGuardianName"
+                                                name="parentGuardianName"
+                                                value={waiverFormData.parentGuardianName}
+                                                onChange={handleWaiverInputChange}
+                                                placeholder="Enter parent/guardian name"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <label htmlFor="email" className="form-label">
+                                                Email <span className="text-danger">*</span>
+                                            </label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                id="email"
+                                                name="email"
+                                                value={waiverFormData.email}
+                                                onChange={handleWaiverInputChange}
+                                                placeholder="Enter email address"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <label htmlFor="phone" className="form-label">
+                                                Phone <span className="text-danger">*</span>
+                                            </label>
+                                            <input
+                                                type="tel"
+                                                className="form-control"
+                                                id="phone"
+                                                name="phone"
+                                                value={waiverFormData.phone}
+                                                onChange={handleWaiverInputChange}
+                                                placeholder="Enter phone number"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="mb-3 p-3" style={{ backgroundColor: '#f5f5f5', borderLeft: '4px solid #2c5aa0', maxHeight: '300px', overflowY: 'auto' }}>
+                                            <h6 className="poppins-medium mb-2">Liability Waiver:</h6>
+                                            <p style={{ whiteSpace: 'pre-wrap', fontSize: '14px' }}>
+                                                {business?.waiverText}
+                                            </p>
+                                        </div>
+
+                                        <div className="form-check mb-3">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                id="agreeToTerms"
+                                                name="agreeToTerms"
+                                                checked={waiverFormData.agreeToTerms}
+                                                onChange={handleWaiverInputChange}
+                                                required
+                                            />
+                                            <label className="form-check-label" htmlFor="agreeToTerms">
+                                                I agree with the terms and conditions above <span className="text-danger">*</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button 
+                                            type="button" 
+                                            className="btn btn-secondary" 
+                                            onClick={() => setShowWaiverModal(false)}
+                                            disabled={submittingWaiver}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button 
+                                            type="submit" 
+                                            className="btn btns"
+                                            disabled={submittingWaiver}
+                                        >
+                                            {submittingWaiver ? (
+                                                <>
+                                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                    Submitting...
+                                                </>
+                                            ) : (
+                                                'Submit Waiver'
+                                            )}
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>

@@ -15,6 +15,7 @@ import AddAthelete from './ChildAdmin/AddAthelete';
 import NotFound from '../../Pages/Errors/NotFound';
 import AddTeam from './ChildAdmin/AddTeam';
 import UploadAthlete from './ChildAdmin/UploadAthlete';
+import ComingSoon from './ChildAdmin/ComingSoon';
 const Admin = () => {
   return (
     <div className="wrapper">

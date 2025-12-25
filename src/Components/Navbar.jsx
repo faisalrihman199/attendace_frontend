@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../assets/Logo.png';
 import person from "../assets/images/Dummy/Profile.png";
+import { LucideMessageCircle } from 'lucide-react';
 
 const NavbarComponent = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -52,10 +53,17 @@ const NavbarComponent = () => {
             </span>
           </button>
         ) : (
-          <div style={{ position: 'relative' }} ref={dropdownRef}>
+          <div className='d-flex align-items-center' style={{ position: 'relative' }} ref={dropdownRef}>
+           
+              <Link className='me-3 color-bao' to={'/chat'} >
+              <LucideMessageCircle color='#247BA0' size={30} />
+              
+              </Link>
+            
             <div className="profile-icon" onClick={() => setShowProfileDropdown(!showProfileDropdown)} style={{ cursor: 'pointer' }}>
               <img src={person} height={40} width={40} alt="Profile Icon" />
             </div>
+            
             {/* Dropdown menu when profile icon is clicked */}
             {showProfileDropdown && (
               <div className="dropdown-menu show" style={{ position: 'absolute', right: 0, top: '50px' }}>
@@ -82,6 +90,7 @@ const NavbarComponent = () => {
                   SignUp / Login
                 </Link>
               </li>
+             
               {/* Add the Templates link here */}
               
             </ul>

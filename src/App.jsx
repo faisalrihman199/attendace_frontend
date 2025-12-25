@@ -14,6 +14,7 @@ import CheckIn from './Pages/CheckIn/CheckIn';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ResetPassword from './Pages/Auth/ResetPassword';
+import ComingSoon from './Pages/Admin/ChildAdmin/ComingSoon';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
 
           <Route path="/check-in/:name" element={<CheckIn />} />
+          <Route path="/chat" element={<ComingSoon />} />
 
 
 

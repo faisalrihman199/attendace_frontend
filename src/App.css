@@ -117,6 +117,9 @@ a{
 .bg_dede{
   background-color: #D1DEDE;
 }
+#bg_dede{
+  background-color: #D1DEDE;
+}
 .bg_dede:focus{
   background-color: #D1DEDE;
 }

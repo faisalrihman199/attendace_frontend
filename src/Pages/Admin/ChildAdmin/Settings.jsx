@@ -10,6 +10,7 @@ import TimezoneSelect from 'react-timezone-select';
 
 const Settings = () => {
     const [emailToggled, setEmailToggle] = useState(false);
+    const [waiverToggled, setWaiverToggle] = useState(false);
     const [imageSrc, setImageSrc] = useState(null); // State to hold image source
     const fileInputRef = useRef(null); // Create a ref for the file input
     const { register, handleSubmit,watch, getValues, setValue } = useForm();
@@ -22,6 +23,11 @@ const Settings = () => {
     const handleEmailToggle = () => {
         setEmailToggle(prevState => !prevState);
     };
+
+    const handleWaiverToggle = () => {
+        setWaiverToggle(prevState => !prevState);
+    };
+    
     const timeZone=watch('timezone') || null;
     console.log("Time Zone :", timeZone);
     
@@ -38,6 +44,8 @@ const Settings = () => {
                 setValue('message', res.data[0].message);
                 setValue('pinLength', res.data[0].pinLength);
                 setValue('timezone', res.data[0].timezone); // Set existing time zone value
+                setValue('waiverText', res.data[0].waiverText || '');
+                setWaiverToggle(res.data[0].waiverActive || false);
                 server = server.replace('/api', '');
                 setImageSrc(`${server}/${res.data[0].photoPath}`);
             })
@@ -82,6 +90,8 @@ const Settings = () => {
         fd.append('message', getValues('message'));
         fd.append('pinLength', getValues('pinLength'));
         fd.append('timezone', getValues('timezone')); // Add time zone
+        fd.append('waiverText', getValues('waiverText') || '');
+        fd.append('waiverActive', waiverToggled);
         console.log("Add Business :", Object.fromEntries(fd));
         
         setLoading(1);
@@ -207,6 +217,36 @@ const Settings = () => {
                                         style={{ display: 'none' }}
                                         accept="image/*"
                                     />
+                            </div>
+                        </div>
+
+                        <div className="row mb-3">
+                            <div className="col-sm-12">
+                                <div className="d-flex justify-content-between align-items-center mb-2">
+                                    <label htmlFor="waiverText" className="form-label mb-0">
+                                        Liability Waiver
+                                    </label>
+                                    <div className="d-flex align-items-center">
+                                        <span className="me-2 poppins-regular">Activate Single Use Liability Waiver</span>
+                                        <IconButton onClick={handleWaiverToggle}>
+                                            {waiverToggled ? (
+                                                <ToggleOn style={{ fontSize: '48px', color: '#2c5aa0' }} />
+                                            ) : (
+                                                <ToggleOff style={{ fontSize: '48px', color: '#999' }} />
+                                            )}
+                                        </IconButton>
+                                    </div>
+                                </div>
+                                <textarea
+                                    name="waiverText"
+                                    id="waiverText"
+                                    placeholder='Enter your liability waiver text here...'
+                                    className='form-control p-2 bg_dede'
+                                    rows={8}
+                                    style={{ resize: 'none' }}
+                                    {...register('waiverText')}
+                                ></textarea>
+                                <small className="text-muted">This text will be displayed to visitors when they click the Liability Waiver button on the check-in page.</small>
                             </div>
                         </div>
                     </div>
